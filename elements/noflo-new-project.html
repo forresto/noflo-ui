@@ -4,30 +4,47 @@
     <form>
       <label>
         Project name
-        <input type="text" value="{{ name }}" placeholder="my-project" required>
+        <input type="text" value="{{ projectId }}" placeholder="my-project" required>
+      </label>
+      <label>
+        Project label
+        <input type="text" value="{{ name }}" placeholder="My Cool Project" required>
       </label>
       <label>
         Primary Type
         <select name="type" value="{{ type }}">
           <option value="html">Browser</option>
           <option value="websocket">Node.js</option>
+          <option value="websocket">Microcontroller</option>
         </select>
       </label>
-      <button on-click="{{ send }}">Create</button>
-      <a on-click="{{ close }}">Cancel</a>
+      <div class="toolbar">
+        <button on-click="{{ send }}">Create</button>
+        <a on-click="{{ close }}">Cancel</a>
+      </div>
     </form>
   </template>
   <script>
     Polymer('noflo-new-project', {
+      projectId: '',
       name: '',
       type: 'html',
+      enteredView: function () {
+        document.getElementById('container').classList.add('blur');
+      },
+      leftView: function () {
+        document.getElementById('container').classList.remove('blur');
+      },
       send: function (event) {
         if (event) {
           event.preventDefault();
         }
         this.fire('new', {
+          id: this.projectId.replace(' ', '-'),
           name: this.name,
-          type: this.type
+          type: this.type,
+          graphs: [],
+          components: []
         });
         this.close();
       },

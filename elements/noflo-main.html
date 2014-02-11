@@ -1,7 +1,7 @@
 <link rel="import" href="noflo-account.html">
 <link rel="import" href="noflo-new-graph.html">
 <link rel="import" href="noflo-new-project.html">
-<polymer-element name="noflo-main" attributes="open projects sketches examples">
+<polymer-element name="noflo-main" attributes="open projects sketches examples graphs components">
   <template>
     <noflo-account clientid="9d963a3d-8b6f-42fe-bb36-6fccecd039af"></noflo-account>
     <section id="projects">
@@ -48,24 +48,19 @@
   </template>
   <script>
     Polymer('noflo-main', {
-      open: false,
+      open: true,
       projects: [],
-      examples: [],
       sketches: [],
+      examples: [],
       enteredView: function () {
         this.openChanged();
       },
       openChanged: function () {
         if (String(this.open) === 'true') {
-          this.style.display = 'block';
-          this.style.opacity = 1;
+          this.style.height = '100%';
           return;
         }
-        this.style.opacity = 0;
-        // TODO: On transition end
-        setTimeout(function () {
-          this.style.display = 'none';
-        }.bind(this), 300);
+        this.style.height = '0px';
       },
       openSketch: function (event, details, sender) {
         event.preventDefault();
@@ -93,6 +88,7 @@
         var dialog = document.createElement('noflo-new-graph');
         this.parentNode.parentNode.appendChild(dialog);
         dialog.addEventListener('new', function (event) {
+          this.sketches.push(event.detail);
           this.fire('newsketch', event.detail);
         }.bind(this));
       },
@@ -101,8 +97,89 @@
         var dialog = document.createElement('noflo-new-project');
         this.parentNode.parentNode.appendChild(dialog);
         dialog.addEventListener('new', function (event) {
+          this.projects.push(event.detail);
           this.fire('newproject', event.detail);
         }.bind(this));
+      },
+      graphs: function (graph) {
+        if (!graph.project) {
+          this.sketches.push(graph);
+          return;
+        }
+        this.projects.forEach(function (project) {
+          if (!project.graphs) {
+            project.graphs = [];
+          }
+          if (!project.components) {
+            project.components = [];
+          }
+          if (graph.project !== project.id) {
+            return;
+          }
+          if (graph.id === project.main) {
+            project.mainGraph = graph;
+          }
+          for (var i = 0; i < project.graphs.length; i++) {
+            if (project.graphs[i].id === graph.id) {
+              project.graphs[i] = graph;
+              return;
+            }
+          }
+          project.graphs.push(graph);
+        });
+      },
+      components: function (component) {
+        this.projects.forEach(function (project) {
+          if (!project.components) {
+            project.components = [];
+          }
+          if (component.project !== project.id) {
+            return;
+          }
+          for (var i = 0; i < project.components.length; i++) {
+            if (project.components[i].id === component.id) {
+              project.components[i] = component;
+              return;
+            }
+          }
+          project.components.push(component);
+        });
+      },
+      route: function (routeData) {
+        if (routeData.project) {
+          this.projects.forEach(function (project) {
+            if (project.id === routeData.project) {
+              this.fire('project', project);
+
+              if (routeData.route === 'graph') {
+                while (routeData.graphs.length) {
+                  var graphId = routeData.graphs.shift();
+                  for (var i = 0; i < project.graphs.length; i++) {
+                    if (project.graphs[i].id === graphId) {
+                      this.fire('graph', project.graphs[i]);
+                    }
+                  }
+                }
+              }
+              if (routeData.route === 'component') {
+                project.components.forEach(function (component) {
+                  if (component.id === routeData.component) {
+                    this.fire('component', component);
+                  }
+                }.bind(this));
+              }
+            }
+          }.bind(this));
+          return;
+        }
+
+        if (routeData.graphs) {
+          this.sketches.forEach(function (sketch) {
+            if (sketch.id === routeData.graphs[0]) {
+              this.fire('graph', sketch);
+            }
+          }.bind(this));
+        }
       }
     });
   </script>

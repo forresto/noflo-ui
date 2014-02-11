@@ -21,6 +21,7 @@
       font-weight: normal;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
       line-height: 36px;
       margin: 0px;
       padding: 0px;
@@ -57,7 +58,7 @@
   </style>
   <template>
     <template if="{{ currentGraph }}">
-      <div id="address" class="{{ online: online }}">
+      <div id="address" class="{{ { online: online } | tokenList }}">
         <button on-click="{{ reconnect }}"><i class="fa fa-refresh"></i></button>
         <template if="{{ currentGraph.properties.environment.runtime == 'html' }}">
           <h2>{{ currentGraph.properties.environment.src }}</h2>
@@ -92,11 +93,9 @@
       },
       card: null,
       graphInspector: null,
-      toolPanel: null,
+      panel: null,
+      edges: null,
       wasConnected: false,
-      enteredView: function () {
-        this.toolPanel = document.getElementById('fixed');
-      },
       graphsChanged: function () {
         if (!this.graphs || this.graphs.length === 0) {
           this.currentGraph = null;
@@ -104,6 +103,19 @@
         }
         // Use the top-level graph as the runtime main graph
         this.currentGraph = this.graphs[0];
+      },
+      edgesChanged: function () {
+        this.sendEdges();
+      },
+      sendEdges: function () {
+        if (!this.runtime || !this.edges || !this.edges.map || !this.currentGraph) {
+          return;
+        }
+        var edgeData = this.edges.map(function (edge) { return edge.toJSON(); });
+        this.runtime.sendNetwork('edges', {
+          edges: edgeData,
+          graph: this.currentGraph.id
+        });
       },
       currentGraphChanged: function () {
         this.wasConnected = false;
@@ -134,7 +146,7 @@
           default:
             this.icon = 'cloud';
             break;
-        }
+          }
         this.fire('runtime', this.runtime);
       },
       subscribeRuntime: function () {
@@ -144,7 +156,9 @@
             this.hideCard();
             this.execution.running = false;
             this.execution.label = 'not started';
-            this.toolPanel.open = false;
+            if (this.panel) {
+              this.panel.open = false;
+            }
           }
         }.bind(this));
         this.runtime.on('execution', function (status) {
@@ -179,6 +193,7 @@
         event.preventDefault();
         this.requestNotificationPermission();
         if (this.card) {
+          this.sendEdges();
           this.runtime.start();
           return;
         }
@@ -204,7 +219,7 @@
         this.runtime.reconnect();
       },
       showCard: function () {
-        if (this.card) {
+        if (this.card || !this.panel) {
           return;
         }
         this.card = document.createElement('the-card');
@@ -215,16 +230,16 @@
         preview.runtime = this.runtime;
         preview.returnTo = this.parentNode;
         this.card.appendChild(preview);
-        this.card.addTo(this.toolPanel.getMain());
-        this.toolPanel.open = true;
+        this.card.addTo(this.panel.getMain());
+        this.panel.open = true;
 
         // Handle maximization
-        var originalSize = this.toolPanel.size;
+        var originalSize = this.panel.size;
         preview.addEventListener('maximized', function (e) {
           if (e.detail) {
-            this.toolPanel.size = window.innerWidth - 36;
+            this.panel.size = window.innerWidth - 36;
           } else {
-            this.toolPanel.size = originalSize;
+            this.panel.size = originalSize;
           }
         }.bind(this));
       },
@@ -242,7 +257,7 @@
         }
         this.graphInspector = document.createElement('noflo-graph-inspector');
         this.graphInspector.graph = this.currentGraph;
-        this.parentNode.appendChild(this.graphInspector);
+        this.parentNode.parentNode.appendChild(this.graphInspector);
       },
       canNotify: function () {
         if (!window.webkitNotifications) {

@@ -14,41 +14,67 @@ class Router extends noflo.Component
       missed: new noflo.Port 'string'
 
     @inPorts.url.on 'data', (url) =>
+      matched = @matchUrl url
       if @outPorts.route.isAttached()
-        @outPorts.route.send true
+        @outPorts.route.send matched
         @outPorts.route.disconnect()
-
-      if url is ''
-        @outPorts.main.send url
-        @outPorts.main.disconnect()
-        return
-
-      if url.substr(0, 8) is 'project/'
-        remainder = url.substr 8
-        parts = remainder.split '/'
-        @outPorts.project.send parts.shift()
-        @outPorts.project.disconnect()
-        if parts[0] is 'component' and parts.length is 2
-          @outPorts.component.send parts[1]
-          @outPorts.component.disconnect()
+      unless matched
+        if @outPorts.missed.isAttached()
+          @outPorts.missed.send url
+          @outPorts.missed.disconnect()
           return
-        for part in parts
-          @outPorts.graph.send part
-        @outPorts.graph.disconnect()
-        return
 
-      if url.substr(0, 6) is 'graph/'
-        @outPorts.graph.send url.substr 6
-        @outPorts.graph.disconnect()
-        return
+      switch matched.route
+        when 'main'
+          return unless @outPorts.main.isAttached()
+          @outPorts.main.send true
+          @outPorts.main.disconnect()
+          return
+        when 'sketch', 'graph'
+          if matched.project and @outPorts.project.isAttached()
+            @outPorts.project.send matched.project
+            @outPorts.project.disconnect()
+          return unless @outPorts.graph.isAttached()
+          @outPorts.graph.send graph for graph in matched.graphs
+          @outPorts.graph.disconnect()
+          return
+        when 'component'
+          if matched.project and @outPorts.project.isAttached()
+            @outPorts.project.send matched.project
+            @outPorts.project.disconnect()
+          if @outPorts.component.isAttached()
+            @outPorts.component.send matched.component
+          return
+        when 'example'
+          return unless @outPorts.example.isAttached()
+          @outPorts.example.send matched.graphs[0]
+          @outPorts.example.disconnect()
 
-      if url.substr(0, 8) is 'example/'
-        @outPorts.example.send url.substr 8
-        @outPorts.example.disconnect()
-        return
-
-      if @outPorts.missed.isAttached()
-        @outPorts.missed.send url
-        @outPorts.missed.disconnect()
+  matchUrl: (url) ->
+    routeData =
+      route: ''
+    if url is ''
+      routeData.route = 'main'
+      return routeData
+    if url.substr(0, 8) is 'project/'
+      remainder = url.substr 8
+      parts = remainder.split '/'
+      routeData.project = parts.shift()
+      if parts[0] is 'component' and parts.length is 2
+        routeData.route = 'component'
+        routeData.component = parts[1]
+        return routeData
+      routeData.route = 'graph'
+      routeData.graphs = parts
+      return routeData
+    if url.substr(0, 6) is 'graph/'
+      routeData.route = 'sketch'
+      routeData.graphs = [url.substr(6)]
+      return routeData
+    if url.substr(0, 8) is 'example/'
+      routeData.route = 'example'
+      routeData.graphs = [url.substr(8)]
+      return routeData
+    return null
 
 exports.getComponent = -> new Router

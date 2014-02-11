@@ -17,11 +17,12 @@
     "spec"
   ],
   "dependencies": {
-    "polymer": "~0.1.1",
-    "the-graph": "git://github.com/the-grid/the-graph.git#master",
+    "polymer": "~0.1.4",
+    "the-graph": "git://github.com/the-grid/the-graph.git#svg",
     "the-panel": "*",
     "the-card": "*",
     "font-awesome": "~4.0.3",
-    "codemirror": "~3.20.0"
+    "codemirror": "~3.20.0",
+    "coffee-script": "~1.6.3"
   }
 }

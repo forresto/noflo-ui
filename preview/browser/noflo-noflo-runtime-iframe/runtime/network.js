@@ -8,14 +8,16 @@
     }
 
     if (options.catchExceptions) {
+      // Can't use bind until https://github.com/ariya/phantomjs/issues/10522 is fixed
+      var self = this;
       context.onerror = function (err) {
-        this.send('network', 'error', {
+        self.send('network', 'error', {
           message: err.toString()
         }, {
-          href: this.context ? this.context.href : context.parent.location.href
+          href: self.context ? self.context.href : context.parent.location.href
         });
         return true;
-      }.bind(this);
+      };
     }
 
     this.prototype.constructor.apply(this, arguments);
@@ -37,20 +39,25 @@
       payload: payload
     }, ctx.href);
   };
-  var runtime = new Iframe({
-    catchExceptions: true
-  });
 
-  context.addEventListener('message', function (message) {
-    if (!message.data.protocol) {
-      return;
+  context.NofloIframeRuntime = function (options) {
+    if (typeof options.catchExceptions === 'undefined') {
+      options.catchExceptions = true;
+      if (context.location.search && context.location.search.substring(1) === 'debug') {
+        options.catchExceptions = false;
+      }
     }
-    if (!message.data.command) {
-      return;
-    }
-    runtime.receive(message.data.protocol, message.data.command, message.data.payload, {
-      href: message.origin
+    var runtime = new Iframe(options);
+    context.addEventListener('message', function (message) {
+      if (!message.data.protocol) {
+        return;
+      }
+      if (!message.data.command) {
+        return;
+      }
+      runtime.receive(message.data.protocol, message.data.command, message.data.payload, {
+        href: message.origin
+      });
     });
-  });
-
+  };
 })(window);

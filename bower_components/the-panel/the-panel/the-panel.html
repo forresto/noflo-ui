@@ -19,6 +19,10 @@
       handle: 0,
       automatic: true,
       open: false,
+      toggleOpen: function (open) {
+        this.open = open;
+        this.updateVisibility();
+      },
       enteredView: function () {
         this.cleanUpLocation();
         this.automaticChanged();
@@ -42,7 +46,7 @@
       },
       automaticChanged: function () {
         if (this.automatic) {
-          this.observe();
+          this.observeChanges();
         } else {
           this.unobserve();
         }
@@ -54,15 +58,16 @@
         if (this.automatic) {
           return;
         }
-        if (this.open && event.target === this) {
+        if (event.target !== this) {
+          return;
+        }
+        if (this.open) {
           this.open = false;
           return;
         }
-        if (!this.open) {
-          this.open = true;
-        }
+        this.open = true;
       },
-      observe: function () {
+      observeChanges: function () {
         this.observer = new MutationObserver(this.handleMutations.bind(this));
         this.observer.observe(this.getMain(), {
           subtree: false,

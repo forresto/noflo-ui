@@ -1,13 +1,15 @@
 <link rel="import" href="../the-library/the-library.html">
 <link rel="import" href="../the-graph/the-graph.html">
-<link rel="import" href="../the-graph-nav/the-graph-nav.html">
+<!-- <link rel="import" href="../the-graph-nav/the-graph-nav.html"> -->
 
-<polymer-element name="the-graph-editor" attributes="grid snap width height" lightdom>
+<script type="text/javascript" src="noflo.js"></script>
+
+<polymer-element name="the-graph-editor" attributes="grid snap width height" lightdom touch-action="none">
   <template>
     <link rel="stylesheet" href="../themes/default/the-graph.css">
     <the-library id="library"></the-library>
     <the-graph id="graph" name="{{ graph.properties.name }}" snap="{{snap}}" grid="{{grid}}" scale="{{scale}}" pan="{{pan}}" width="{{width}}" height="{{height}}"></the-graph>
-    <the-graph-nav id="nav" scale="{{scale}}" pan="{{pan}}" viewwidth="{{width}}" viewheight="{{height}}"></the-graph-nav>
+    <!-- <the-graph-nav id="nav" scale="{{scale}}" pan="{{pan}}" viewwidth="{{width}}" viewheight="{{height}}"></the-graph-nav> -->
   </template>
   <script>
   (function () {
@@ -16,13 +18,14 @@
     Polymer('the-graph-editor', {
       graph: {},
       library: {},
-      grid: theGraph.gridSize,
+      grid: 72,
       snap: 36,
       width: 800,
       height: 600,
       scale: 1,
       pan: "0 0",
       plugins: {},
+      nofloGraph: null,
       ready: function () {
       },
       addPlugin: function (name, plugin) {
@@ -30,21 +33,6 @@
         plugin.register(this);
       },
       enteredView: function () {
-        var wheelEventName = "onwheel" in document.createElement("div") ? "wheel" :
-          (document.onmousewheel !== undefined ? "mousewheel" : undefined);
-
-        if (!wheelEventName) { return; }
-
-        this.addEventListener(wheelEventName, function (event) {
-          event.preventDefault();
-          
-          var pan = this.pan.split(" ");
-          var x = parseInt(pan[0], 10);
-          var y = parseInt(pan[1], 10);
-          x += event.wheelDeltaX !== undefined ? event.wheelDeltaX : event.deltaX ;
-          y += event.wheelDeltaY !== undefined ? event.wheelDeltaY : event.deltaY ;
-          this.pan = x + " " + y;
-        });
       },
       leftView: function () {
         for (var name in this.plugins) {
@@ -59,15 +47,17 @@
         this.style.height = this.height + "px";
       },
       graphChanged: function () {
-        this.buildInitialLibrary();
+        // this.buildInitialLibrary();
 
-        var graphEl = this.$.graph;
-        graphEl.graph = this.graph;
-        graphEl.library = this.$.library;
+        var nf = require('noflo');
+        var self = this;
+        nf.graph.loadJSON(this.graph, function(nofloGraph){
+          self.nofloGraph = nofloGraph;
+          self.$.graph.graph = nofloGraph;
+        });
 
-        // Reference the graph element
-        this.$.nav.graph = graphEl;
       },
+      /*
       buildInitialLibrary: function () {
         Object.keys(this.graph.processes).forEach(function (id) {
           var node = this.graph.processes[id];
@@ -156,8 +146,9 @@
           });
         });
       },
+      */
       toJSON: function () {
-        return this.$.graph.toJSON();
+        return this.nofloGraph.toJSON();
       }
     });
 

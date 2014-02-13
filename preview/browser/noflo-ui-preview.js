@@ -2771,11 +2771,14 @@ Graph = (function(_super) {
   }
 
   Graph.prototype.addExport = function(privatePort, publicPort, metadata) {
-    return this.exports.push({
+    var exported;
+    exported = {
       "private": privatePort.toLowerCase(),
       "public": publicPort.toLowerCase(),
       metadata: metadata
-    });
+    };
+    this.exports.push(exported);
+    return this.emit('addExport', exported);
   };
 
   Graph.prototype.removeExport = function(publicPort) {
@@ -2790,9 +2793,26 @@ Graph = (function(_super) {
       if (exported["public"] !== publicPort) {
         continue;
       }
-      _results.push(this.exports.splice(this.exports.indexOf(exported), 1));
+      this.exports.splice(this.exports.indexOf(exported), 1);
+      _results.push(this.emit('removeExport', exported));
     }
     return _results;
+  };
+
+  Graph.prototype.renameExport = function(oldPort, newPort) {
+    var exported, _i, _len, _ref;
+    _ref = this.exports;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      exported = _ref[_i];
+      if (!exported) {
+        continue;
+      }
+      if (exported["public"] !== oldPort) {
+        continue;
+      }
+      exported["public"] = newPort;
+    }
+    return this.emit('renameExport', oldPort, newPort);
   };
 
   Graph.prototype.addGroup = function(group, nodes, metadata) {
@@ -4778,7 +4798,11 @@ ComponentLoader = (function() {
       instance = component.getComponent();
     } else {
       implementation = require(component);
-      instance = implementation.getComponent();
+      if (implementation.getComponent && typeof implementation.getComponent === 'function') {
+        instance = implementation.getComponent();
+      } else {
+        instance = implementation();
+      }
     }
     if (name === 'Graph') {
       instance.baseDir = this.baseDir;
@@ -6211,11 +6235,13 @@ ComponentProtocol = (function() {
         });
       } catch (_error) {
         e = _error;
+        this.send('error', new Error("" + payload.name + " L" + e.location.first_line + ", C" + e.location.first_column + ": " + e.message), context);
         return;
       }
     }
     implementation = eval("(function () { var exports = {}; " + source + "; return exports; })()");
     if (!(implementation || implementation.getComponent)) {
+      this.send('error', new Error("" + payload.name + ": No component implementation available"), context);
       return;
     }
     library = payload.library ? payload.library : '';
@@ -16845,15 +16871,15 @@ Jsonify = (function(_super) {
   function Jsonify() {
     this.raw = false;
     this.inPorts = {
-      "in": new noflo.Port(),
-      raw: new noflo.Port()
+      "in": new noflo.Port('object'),
+      raw: new noflo.Port('boolean')
     };
     this.outPorts = {
-      out: new noflo.Port()
+      out: new noflo.Port('string')
     };
     this.inPorts.raw.on('data', (function(_this) {
       return function(raw) {
-        return _this.raw = raw === 'true';
+        return _this.raw = String(raw) === 'true';
       };
     })(this));
     this.inPorts["in"].on('begingroup', (function(_this) {

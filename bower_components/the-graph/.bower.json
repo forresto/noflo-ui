@@ -22,11 +22,11 @@
     "tools"
   ],
   "homepage": "https://github.com/the-grid/the-graph",
-  "_release": "d7ed04de5f",
+  "_release": "4ac665a2d6",
   "_resolution": {
     "type": "branch",
     "branch": "svg",
-    "commit": "d7ed04de5f8c524c358b1ace8f3410b2f0f5f33a"
+    "commit": "4ac665a2d64c95f5c2364fc8188e75f348949699"
   },
   "_source": "git://github.com/the-grid/the-graph.git",
   "_target": "svg",

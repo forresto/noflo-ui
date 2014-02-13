@@ -5650,12 +5650,6 @@ Graph = (function(_super) {
   Graph.prototype.isExported = function(port, nodeName, portName) {
     var exported, newPort, _i, _len, _ref;
     newPort = this.portName(nodeName, portName);
-    if (!port.canAttach()) {
-      return false;
-    }
-    if (this.network.graph.exports.length === 0) {
-      return newPort;
-    }
     _ref = this.network.graph.exports;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       exported = _ref[_i];
@@ -5663,7 +5657,13 @@ Graph = (function(_super) {
         return exported["public"];
       }
     }
-    return false;
+    if (this.network.graph.exports.length) {
+      return false;
+    }
+    if (port.isAttached()) {
+      return false;
+    }
+    return newPort;
   };
 
   Graph.prototype.setToReady = function() {
@@ -9374,15 +9374,7 @@ GetObjectKey = (function(_super) {
     })(this));
     this.inPorts.sendgroup.on('data', (function(_this) {
       return function(data) {
-        if (typeof data === 'string') {
-          if (data.toLowerCase() === 'false') {
-            _this.sendGroup = false;
-            return;
-          }
-          _this.sendGroup = true;
-          return;
-        }
-        return _this.sendGroup = data;
+        return _this.sendGroup = String(keep) === 'true';
       };
     })(this));
   }
@@ -9863,17 +9855,17 @@ SetPropertyValue = (function(_super) {
     this.groups = [];
     this.keep = false;
     this.inPorts = {
-      property: new noflo.Port(),
-      value: new noflo.Port(),
-      "in": new noflo.Port(),
-      keep: new noflo.Port()
+      property: new noflo.Port('string'),
+      value: new noflo.Port('all'),
+      "in": new noflo.Port('object'),
+      keep: new noflo.Port('boolean')
     };
     this.outPorts = {
-      out: new noflo.Port()
+      out: new noflo.Port('object')
     };
     this.inPorts.keep.on('data', (function(_this) {
       return function(keep) {
-        return _this.keep = keep === 'true';
+        return _this.keep = String(keep) === 'true';
       };
     })(this));
     this.inPorts.property.on('data', (function(_this) {
@@ -14626,6 +14618,11 @@ prepareSocketEvent = function(event, req) {
     }
     if (event.data.toString) {
       payload.data = event.data.toString();
+      if (payload.data === '[object Object]') {
+        try {
+          payload.data = JSON.parse(JSON.stringify(event.data));
+        } catch (_error) {}
+      }
     } else {
       payload.data = event.data;
     }

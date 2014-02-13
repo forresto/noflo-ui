@@ -3,11 +3,9 @@
 
   var TheGraph = context.TheGraph;
 
-  // Font Awesome
-  var faKeys = Object.keys(TheGraph.FONT_AWESOME);
-
   // Polymer monkeypatch
   window.PointerGestures.dispatcher.recognizers.hold.HOLD_DELAY = 500;
+
 
   // Node view
   TheGraph.Node = React.createClass({
@@ -16,10 +14,6 @@
       TheGraph.mixins.SavePointer
     ],
     getInitialState: function() {
-      return {
-        // Random icon just for fun
-        icon: faKeys[ Math.floor(Math.random()*faKeys.length) ]
-      };
     },
     componentDidMount: function () {
       // Dragging
@@ -27,7 +21,6 @@
 
       // Hover/tap when edge preview is active
       this.getDOMNode().addEventListener("mouseenter", this.edgeConnectOffer);
-      // this.getDOMNode().addEventListener("pointerleave", this.showContext);
 
       // Context menu
       this.getDOMNode().addEventListener("pointerdown", this.stopPropagation);
@@ -143,6 +136,7 @@
         graph: this.props.graph,
         graphView: this.props.graphView,
         node: this,
+        icon: this.props.icon,
         ports: ports,
         process: this.props.process,
         processKey: processKey,
@@ -158,16 +152,30 @@
     shouldShowTooltip: function () {
       return (this.props.app.state.scale < TheGraph.zbpNormal);
     },
+    dirty: false,
     shouldComponentUpdate: function (nextProps, nextState) {
       // Only rerender if moved
       return (
+        this.dirty ||
+        nextProps.icon !== this.props.icon ||
         nextProps.x !== this.props.x || 
-        nextProps.y !== this.props.y ||
-        nextProps.ports.inports.length !== this.props.ports.inports.length ||
-        nextProps.ports.outports.length !== this.props.ports.outports.length
+        nextProps.y !== this.props.y
       );
     },
+    componentDidUpdate: function (prevProps, prevState, rootNode) {
+      // HACK til 0.9.0
+      if (prevProps.icon != this.props.icon) {
+        // Make sure icon exists
+        var icon = TheGraph.FONT_AWESOME[ this.props.icon ];
+        if (!icon) { 
+          icon = TheGraph.FONT_AWESOME.cog;
+        }
+        this.refs.icon.getDOMNode().textContent = icon;
+      }
+    },
     render: function() {
+      this.dirty = false;
+
       var metadata = this.props.node.metadata;
 
       var label = this.props.label;
@@ -215,6 +223,12 @@
         return TheGraph.Port(info);
       });
 
+      // Make sure icon exists
+      var icon = TheGraph.FONT_AWESOME[ this.props.icon ];
+      if (!icon) { 
+        icon = TheGraph.FONT_AWESOME.cog;
+      }
+
       return (
         React.DOM.g(
           {
@@ -237,10 +251,11 @@
             ry: TheGraph.nodeRadius
           }),
           React.DOM.text({
+            ref: "icon",
             className: "icon node-icon drag",
             x: TheGraph.nodeSize/2,
             y: TheGraph.nodeSize/2,
-            children: TheGraph.FONT_AWESOME[this.state.icon]
+            children: icon
           }),
           React.DOM.g({
             className: "inports",

@@ -18352,6 +18352,1982 @@ exports.getComponent = function() {
 };
 
 });
+require.register("component-reduce/index.js", function(exports, require, module){
+
+/**
+ * Reduce `arr` with `fn`.
+ *
+ * @param {Array} arr
+ * @param {Function} fn
+ * @param {Mixed} initial
+ *
+ * TODO: combatible error handling?
+ */
+
+module.exports = function(arr, fn, initial){  
+  var idx = 0;
+  var len = arr.length;
+  var curr = arguments.length == 3
+    ? initial
+    : arr[idx++];
+
+  while (idx < len) {
+    curr = fn.call(null, curr, arr[idx], ++idx, arr);
+  }
+  
+  return curr;
+};
+});
+require.register("visionmedia-superagent/lib/client.js", function(exports, require, module){
+/**
+ * Module dependencies.
+ */
+
+var Emitter = require('emitter');
+var reduce = require('reduce');
+
+/**
+ * Root reference for iframes.
+ */
+
+var root = 'undefined' == typeof window
+  ? this
+  : window;
+
+/**
+ * Noop.
+ */
+
+function noop(){};
+
+/**
+ * Check if `obj` is a host object,
+ * we don't want to serialize these :)
+ *
+ * TODO: future proof, move to compoent land
+ *
+ * @param {Object} obj
+ * @return {Boolean}
+ * @api private
+ */
+
+function isHost(obj) {
+  var str = {}.toString.call(obj);
+
+  switch (str) {
+    case '[object File]':
+    case '[object Blob]':
+    case '[object FormData]':
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Determine XHR.
+ */
+
+function getXHR() {
+  if (root.XMLHttpRequest
+    && ('file:' != root.location.protocol || !root.ActiveXObject)) {
+    return new XMLHttpRequest;
+  } else {
+    try { return new ActiveXObject('Microsoft.XMLHTTP'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP.6.0'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP.3.0'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP'); } catch(e) {}
+  }
+  return false;
+}
+
+/**
+ * Removes leading and trailing whitespace, added to support IE.
+ *
+ * @param {String} s
+ * @return {String}
+ * @api private
+ */
+
+var trim = ''.trim
+  ? function(s) { return s.trim(); }
+  : function(s) { return s.replace(/(^\s*|\s*$)/g, ''); };
+
+/**
+ * Check if `obj` is an object.
+ *
+ * @param {Object} obj
+ * @return {Boolean}
+ * @api private
+ */
+
+function isObject(obj) {
+  return obj === Object(obj);
+}
+
+/**
+ * Serialize the given `obj`.
+ *
+ * @param {Object} obj
+ * @return {String}
+ * @api private
+ */
+
+function serialize(obj) {
+  if (!isObject(obj)) return obj;
+  var pairs = [];
+  for (var key in obj) {
+    if (null != obj[key]) {
+      pairs.push(encodeURIComponent(key)
+        + '=' + encodeURIComponent(obj[key]));
+    }
+  }
+  return pairs.join('&');
+}
+
+/**
+ * Expose serialization method.
+ */
+
+ request.serializeObject = serialize;
+
+ /**
+  * Parse the given x-www-form-urlencoded `str`.
+  *
+  * @param {String} str
+  * @return {Object}
+  * @api private
+  */
+
+function parseString(str) {
+  var obj = {};
+  var pairs = str.split('&');
+  var parts;
+  var pair;
+
+  for (var i = 0, len = pairs.length; i < len; ++i) {
+    pair = pairs[i];
+    parts = pair.split('=');
+    obj[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+  }
+
+  return obj;
+}
+
+/**
+ * Expose parser.
+ */
+
+request.parseString = parseString;
+
+/**
+ * Default MIME type map.
+ *
+ *     superagent.types.xml = 'application/xml';
+ *
+ */
+
+request.types = {
+  html: 'text/html',
+  json: 'application/json',
+  xml: 'application/xml',
+  urlencoded: 'application/x-www-form-urlencoded',
+  'form': 'application/x-www-form-urlencoded',
+  'form-data': 'application/x-www-form-urlencoded'
+};
+
+/**
+ * Default serialization map.
+ *
+ *     superagent.serialize['application/xml'] = function(obj){
+ *       return 'generated xml here';
+ *     };
+ *
+ */
+
+ request.serialize = {
+   'application/x-www-form-urlencoded': serialize,
+   'application/json': JSON.stringify
+ };
+
+ /**
+  * Default parsers.
+  *
+  *     superagent.parse['application/xml'] = function(str){
+  *       return { object parsed from str };
+  *     };
+  *
+  */
+
+request.parse = {
+  'application/x-www-form-urlencoded': parseString,
+  'application/json': JSON.parse
+};
+
+/**
+ * Parse the given header `str` into
+ * an object containing the mapped fields.
+ *
+ * @param {String} str
+ * @return {Object}
+ * @api private
+ */
+
+function parseHeader(str) {
+  var lines = str.split(/\r?\n/);
+  var fields = {};
+  var index;
+  var line;
+  var field;
+  var val;
+
+  lines.pop(); // trailing CRLF
+
+  for (var i = 0, len = lines.length; i < len; ++i) {
+    line = lines[i];
+    index = line.indexOf(':');
+    field = line.slice(0, index).toLowerCase();
+    val = trim(line.slice(index + 1));
+    fields[field] = val;
+  }
+
+  return fields;
+}
+
+/**
+ * Return the mime type for the given `str`.
+ *
+ * @param {String} str
+ * @return {String}
+ * @api private
+ */
+
+function type(str){
+  return str.split(/ *; */).shift();
+};
+
+/**
+ * Return header field parameters.
+ *
+ * @param {String} str
+ * @return {Object}
+ * @api private
+ */
+
+function params(str){
+  return reduce(str.split(/ *; */), function(obj, str){
+    var parts = str.split(/ *= */)
+      , key = parts.shift()
+      , val = parts.shift();
+
+    if (key && val) obj[key] = val;
+    return obj;
+  }, {});
+};
+
+/**
+ * Initialize a new `Response` with the given `xhr`.
+ *
+ *  - set flags (.ok, .error, etc)
+ *  - parse header
+ *
+ * Examples:
+ *
+ *  Aliasing `superagent` as `request` is nice:
+ *
+ *      request = superagent;
+ *
+ *  We can use the promise-like API, or pass callbacks:
+ *
+ *      request.get('/').end(function(res){});
+ *      request.get('/', function(res){});
+ *
+ *  Sending data can be chained:
+ *
+ *      request
+ *        .post('/user')
+ *        .send({ name: 'tj' })
+ *        .end(function(res){});
+ *
+ *  Or passed to `.send()`:
+ *
+ *      request
+ *        .post('/user')
+ *        .send({ name: 'tj' }, function(res){});
+ *
+ *  Or passed to `.post()`:
+ *
+ *      request
+ *        .post('/user', { name: 'tj' })
+ *        .end(function(res){});
+ *
+ * Or further reduced to a single call for simple cases:
+ *
+ *      request
+ *        .post('/user', { name: 'tj' }, function(res){});
+ *
+ * @param {XMLHTTPRequest} xhr
+ * @param {Object} options
+ * @api private
+ */
+
+function Response(req, options) {
+  options = options || {};
+  this.req = req;
+  this.xhr = this.req.xhr;
+  this.text = this.xhr.responseText;
+  this.setStatusProperties(this.xhr.status);
+  this.header = this.headers = parseHeader(this.xhr.getAllResponseHeaders());
+  // getAllResponseHeaders sometimes falsely returns "" for CORS requests, but
+  // getResponseHeader still works. so we get content-type even if getting
+  // other headers fails.
+  this.header['content-type'] = this.xhr.getResponseHeader('content-type');
+  this.setHeaderProperties(this.header);
+  this.body = this.req.method != 'HEAD'
+    ? this.parseBody(this.text)
+    : null;
+}
+
+/**
+ * Get case-insensitive `field` value.
+ *
+ * @param {String} field
+ * @return {String}
+ * @api public
+ */
+
+Response.prototype.get = function(field){
+  return this.header[field.toLowerCase()];
+};
+
+/**
+ * Set header related properties:
+ *
+ *   - `.type` the content type without params
+ *
+ * A response of "Content-Type: text/plain; charset=utf-8"
+ * will provide you with a `.type` of "text/plain".
+ *
+ * @param {Object} header
+ * @api private
+ */
+
+Response.prototype.setHeaderProperties = function(header){
+  // content-type
+  var ct = this.header['content-type'] || '';
+  this.type = type(ct);
+
+  // params
+  var obj = params(ct);
+  for (var key in obj) this[key] = obj[key];
+};
+
+/**
+ * Parse the given body `str`.
+ *
+ * Used for auto-parsing of bodies. Parsers
+ * are defined on the `superagent.parse` object.
+ *
+ * @param {String} str
+ * @return {Mixed}
+ * @api private
+ */
+
+Response.prototype.parseBody = function(str){
+  var parse = request.parse[this.type];
+  return parse
+    ? parse(str)
+    : null;
+};
+
+/**
+ * Set flags such as `.ok` based on `status`.
+ *
+ * For example a 2xx response will give you a `.ok` of __true__
+ * whereas 5xx will be __false__ and `.error` will be __true__. The
+ * `.clientError` and `.serverError` are also available to be more
+ * specific, and `.statusType` is the class of error ranging from 1..5
+ * sometimes useful for mapping respond colors etc.
+ *
+ * "sugar" properties are also defined for common cases. Currently providing:
+ *
+ *   - .noContent
+ *   - .badRequest
+ *   - .unauthorized
+ *   - .notAcceptable
+ *   - .notFound
+ *
+ * @param {Number} status
+ * @api private
+ */
+
+Response.prototype.setStatusProperties = function(status){
+  var type = status / 100 | 0;
+
+  // status / class
+  this.status = status;
+  this.statusType = type;
+
+  // basics
+  this.info = 1 == type;
+  this.ok = 2 == type;
+  this.clientError = 4 == type;
+  this.serverError = 5 == type;
+  this.error = (4 == type || 5 == type)
+    ? this.toError()
+    : false;
+
+  // sugar
+  this.accepted = 202 == status;
+  this.noContent = 204 == status || 1223 == status;
+  this.badRequest = 400 == status;
+  this.unauthorized = 401 == status;
+  this.notAcceptable = 406 == status;
+  this.notFound = 404 == status;
+  this.forbidden = 403 == status;
+};
+
+/**
+ * Return an `Error` representative of this response.
+ *
+ * @return {Error}
+ * @api public
+ */
+
+Response.prototype.toError = function(){
+  var req = this.req;
+  var method = req.method;
+  var path = req.path;
+
+  var msg = 'cannot ' + method + ' ' + path + ' (' + this.status + ')';
+  var err = new Error(msg);
+  err.status = this.status;
+  err.method = method;
+  err.path = path;
+
+  return err;
+};
+
+/**
+ * Expose `Response`.
+ */
+
+request.Response = Response;
+
+/**
+ * Initialize a new `Request` with the given `method` and `url`.
+ *
+ * @param {String} method
+ * @param {String} url
+ * @api public
+ */
+
+function Request(method, url) {
+  var self = this;
+  Emitter.call(this);
+  this._query = this._query || [];
+  this.method = method;
+  this.url = url;
+  this.header = {};
+  this._header = {};
+  this.on('end', function(){
+    var res = new Response(self);
+    if ('HEAD' == method) res.text = null;
+    self.callback(null, res);
+  });
+}
+
+/**
+ * Mixin `Emitter`.
+ */
+
+Emitter(Request.prototype);
+
+/**
+ * Set timeout to `ms`.
+ *
+ * @param {Number} ms
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.timeout = function(ms){
+  this._timeout = ms;
+  return this;
+};
+
+/**
+ * Clear previous timeout.
+ *
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.clearTimeout = function(){
+  this._timeout = 0;
+  clearTimeout(this._timer);
+  return this;
+};
+
+/**
+ * Abort the request, and clear potential timeout.
+ *
+ * @return {Request}
+ * @api public
+ */
+
+Request.prototype.abort = function(){
+  if (this.aborted) return;
+  this.aborted = true;
+  this.xhr.abort();
+  this.clearTimeout();
+  this.emit('abort');
+  return this;
+};
+
+/**
+ * Set header `field` to `val`, or multiple fields with one object.
+ *
+ * Examples:
+ *
+ *      req.get('/')
+ *        .set('Accept', 'application/json')
+ *        .set('X-API-Key', 'foobar')
+ *        .end(callback);
+ *
+ *      req.get('/')
+ *        .set({ Accept: 'application/json', 'X-API-Key': 'foobar' })
+ *        .end(callback);
+ *
+ * @param {String|Object} field
+ * @param {String} val
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.set = function(field, val){
+  if (isObject(field)) {
+    for (var key in field) {
+      this.set(key, field[key]);
+    }
+    return this;
+  }
+  this._header[field.toLowerCase()] = val;
+  this.header[field] = val;
+  return this;
+};
+
+/**
+ * Get case-insensitive header `field` value.
+ *
+ * @param {String} field
+ * @return {String}
+ * @api private
+ */
+
+Request.prototype.getHeader = function(field){
+  return this._header[field.toLowerCase()];
+};
+
+/**
+ * Set Content-Type to `type`, mapping values from `request.types`.
+ *
+ * Examples:
+ *
+ *      superagent.types.xml = 'application/xml';
+ *
+ *      request.post('/')
+ *        .type('xml')
+ *        .send(xmlstring)
+ *        .end(callback);
+ *
+ *      request.post('/')
+ *        .type('application/xml')
+ *        .send(xmlstring)
+ *        .end(callback);
+ *
+ * @param {String} type
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.type = function(type){
+  this.set('Content-Type', request.types[type] || type);
+  return this;
+};
+
+/**
+ * Set Accept to `type`, mapping values from `request.types`.
+ *
+ * Examples:
+ *
+ *      superagent.types.json = 'application/json';
+ *
+ *      request.get('/agent')
+ *        .accept('json')
+ *        .end(callback);
+ *
+ *      request.get('/agent')
+ *        .accept('application/json')
+ *        .end(callback);
+ *
+ * @param {String} accept
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.accept = function(type){
+  this.set('Accept', request.types[type] || type);
+  return this;
+};
+
+/**
+ * Set Authorization field value with `user` and `pass`.
+ *
+ * @param {String} user
+ * @param {String} pass
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.auth = function(user, pass){
+  var str = btoa(user + ':' + pass);
+  this.set('Authorization', 'Basic ' + str);
+  return this;
+};
+
+/**
+* Add query-string `val`.
+*
+* Examples:
+*
+*   request.get('/shoes')
+*     .query('size=10')
+*     .query({ color: 'blue' })
+*
+* @param {Object|String} val
+* @return {Request} for chaining
+* @api public
+*/
+
+Request.prototype.query = function(val){
+  if ('string' != typeof val) val = serialize(val);
+  if (val) this._query.push(val);
+  return this;
+};
+
+/**
+ * Send `data`, defaulting the `.type()` to "json" when
+ * an object is given.
+ *
+ * Examples:
+ *
+ *       // querystring
+ *       request.get('/search')
+ *         .end(callback)
+ *
+ *       // multiple data "writes"
+ *       request.get('/search')
+ *         .send({ search: 'query' })
+ *         .send({ range: '1..5' })
+ *         .send({ order: 'desc' })
+ *         .end(callback)
+ *
+ *       // manual json
+ *       request.post('/user')
+ *         .type('json')
+ *         .send('{"name":"tj"})
+ *         .end(callback)
+ *
+ *       // auto json
+ *       request.post('/user')
+ *         .send({ name: 'tj' })
+ *         .end(callback)
+ *
+ *       // manual x-www-form-urlencoded
+ *       request.post('/user')
+ *         .type('form')
+ *         .send('name=tj')
+ *         .end(callback)
+ *
+ *       // auto x-www-form-urlencoded
+ *       request.post('/user')
+ *         .type('form')
+ *         .send({ name: 'tj' })
+ *         .end(callback)
+ *
+ *       // defaults to x-www-form-urlencoded
+  *      request.post('/user')
+  *        .send('name=tobi')
+  *        .send('species=ferret')
+  *        .end(callback)
+ *
+ * @param {String|Object} data
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.send = function(data){
+  var obj = isObject(data);
+  var type = this.getHeader('Content-Type');
+
+  // merge
+  if (obj && isObject(this._data)) {
+    for (var key in data) {
+      this._data[key] = data[key];
+    }
+  } else if ('string' == typeof data) {
+    if (!type) this.type('form');
+    type = this.getHeader('Content-Type');
+    if ('application/x-www-form-urlencoded' == type) {
+      this._data = this._data
+        ? this._data + '&' + data
+        : data;
+    } else {
+      this._data = (this._data || '') + data;
+    }
+  } else {
+    this._data = data;
+  }
+
+  if (!obj) return this;
+  if (!type) this.type('json');
+  return this;
+};
+
+/**
+ * Invoke the callback with `err` and `res`
+ * and handle arity check.
+ *
+ * @param {Error} err
+ * @param {Response} res
+ * @api private
+ */
+
+Request.prototype.callback = function(err, res){
+  var fn = this._callback;
+  if (2 == fn.length) return fn(err, res);
+  if (err) return this.emit('error', err);
+  fn(res);
+};
+
+/**
+ * Invoke callback with x-domain error.
+ *
+ * @api private
+ */
+
+Request.prototype.crossDomainError = function(){
+  var err = new Error('Origin is not allowed by Access-Control-Allow-Origin');
+  err.crossDomain = true;
+  this.callback(err);
+};
+
+/**
+ * Invoke callback with timeout error.
+ *
+ * @api private
+ */
+
+Request.prototype.timeoutError = function(){
+  var timeout = this._timeout;
+  var err = new Error('timeout of ' + timeout + 'ms exceeded');
+  err.timeout = timeout;
+  this.callback(err);
+};
+
+/**
+ * Enable transmission of cookies with x-domain requests.
+ *
+ * Note that for this to work the origin must not be
+ * using "Access-Control-Allow-Origin" with a wildcard,
+ * and also must set "Access-Control-Allow-Credentials"
+ * to "true".
+ *
+ * @api public
+ */
+
+Request.prototype.withCredentials = function(){
+  this._withCredentials = true;
+  return this;
+};
+
+/**
+ * Initiate request, invoking callback `fn(res)`
+ * with an instanceof `Response`.
+ *
+ * @param {Function} fn
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.end = function(fn){
+  var self = this;
+  var xhr = this.xhr = getXHR();
+  var query = this._query.join('&');
+  var timeout = this._timeout;
+  var data = this._data;
+
+  // store callback
+  this._callback = fn || noop;
+
+  // state change
+  xhr.onreadystatechange = function(){
+    if (4 != xhr.readyState) return;
+    if (0 == xhr.status) {
+      if (self.aborted) return self.timeoutError();
+      return self.crossDomainError();
+    }
+    self.emit('end');
+  };
+
+  // progress
+  if (xhr.upload) {
+    xhr.upload.onprogress = function(e){
+      e.percent = e.loaded / e.total * 100;
+      self.emit('progress', e);
+    };
+  }
+
+  // timeout
+  if (timeout && !this._timer) {
+    this._timer = setTimeout(function(){
+      self.abort();
+    }, timeout);
+  }
+
+  // querystring
+  if (query) {
+    query = request.serializeObject(query);
+    this.url += ~this.url.indexOf('?')
+      ? '&' + query
+      : '?' + query;
+  }
+
+  // initiate request
+  xhr.open(this.method, this.url, true);
+
+  // CORS
+  if (this._withCredentials) xhr.withCredentials = true;
+
+  // body
+  if ('GET' != this.method && 'HEAD' != this.method && 'string' != typeof data && !isHost(data)) {
+    // serialize stuff
+    var serialize = request.serialize[this.getHeader('Content-Type')];
+    if (serialize) data = serialize(data);
+  }
+
+  // set header fields
+  for (var field in this.header) {
+    if (null == this.header[field]) continue;
+    xhr.setRequestHeader(field, this.header[field]);
+  }
+
+  // send stuff
+  xhr.send(data);
+  return this;
+};
+
+/**
+ * Expose `Request`.
+ */
+
+request.Request = Request;
+
+/**
+ * Issue a request:
+ *
+ * Examples:
+ *
+ *    request('GET', '/users').end(callback)
+ *    request('/users').end(callback)
+ *    request('/users', callback)
+ *
+ * @param {String} method
+ * @param {String|Function} url or callback
+ * @return {Request}
+ * @api public
+ */
+
+function request(method, url) {
+  // callback
+  if ('function' == typeof url) {
+    return new Request('GET', method).end(url);
+  }
+
+  // url first
+  if (1 == arguments.length) {
+    return new Request('GET', method);
+  }
+
+  return new Request(method, url);
+}
+
+/**
+ * GET `url` with optional callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} data or fn
+ * @param {Function} fn
+ * @return {Request}
+ * @api public
+ */
+
+request.get = function(url, data, fn){
+  var req = request('GET', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.query(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * HEAD `url` with optional callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} data or fn
+ * @param {Function} fn
+ * @return {Request}
+ * @api public
+ */
+
+request.head = function(url, data, fn){
+  var req = request('HEAD', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * DELETE `url` with optional callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Function} fn
+ * @return {Request}
+ * @api public
+ */
+
+request.del = function(url, fn){
+  var req = request('DELETE', url);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * PATCH `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed} data
+ * @param {Function} fn
+ * @return {Request}
+ * @api public
+ */
+
+request.patch = function(url, data, fn){
+  var req = request('PATCH', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * POST `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed} data
+ * @param {Function} fn
+ * @return {Request}
+ * @api public
+ */
+
+request.post = function(url, data, fn){
+  var req = request('POST', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * PUT `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} data or fn
+ * @param {Function} fn
+ * @return {Request}
+ * @api public
+ */
+
+request.put = function(url, data, fn){
+  var req = request('PUT', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * Expose `request`.
+ */
+
+module.exports = request;
+
+});
+require.register("bergie-octo/octo.js", function(exports, require, module){
+/*!
+ * octo.js
+ * Copyright (c) 2012 Justin Palmer <justin@labratrevenge.com>
+ * MIT Licensed
+ */
+
+(function() {
+
+  if(typeof superagent === 'undefined' && require) {
+    superagent = require('superagent');
+    if (typeof process !== 'undefined' && process.execPath && process.execPath.indexOf('node') !== -1) {
+      btoa = require('btoa');
+    }
+  }
+
+  var octo = {}
+
+  // The main entry point for interacting with the GitHub API v3.
+  //
+  //      var gh = octo.api()
+  //      gh.get('/events').on('success', function(events) {
+  //        console.log(events);
+  //      })
+  //
+  octo.api = function() {
+    var host  = 'https://api.github.com',
+        agent = superagent,
+        limit,
+        remaining,
+        username,
+        password,
+        token
+
+    function api() {}
+
+    function pager(method, path, params) {
+      var page    = 1,
+          perpage = 30,
+          hasnext = false,
+          hasprev = false,
+          headers = {},
+          callbacks = {}
+
+      var request = function() {
+        var req = superagent[method](api.host() + path)
+
+        var complete = function(res) {
+          limit = ~~res.header['x-ratelimit-limit']
+          remaining = ~~res.header['x-ratelimit-remaining']
+
+          var link = res.header['link']
+          hasnext = (/rel=\"next\"/i).test(link)
+          hasprev = (/rel=\"next\"/).test(link)
+
+          pager.trigger('end', res)
+          if(res.ok)    pager.trigger('success', res)
+          if(res.error) pager.trigger('error', res)
+        }
+
+        if(token) req.set('Authorization', 'token ' + token)
+
+        if(!token && username && password)
+          req.set('Authorization', 'Basic ' + btoa(username + ':' + password))
+
+        req
+          .set(headers)
+          .query({page: page, per_page: perpage})
+          .send(params)
+          .end(complete)
+      }
+
+      // ### Paging
+      // Each subsequent request for additional pages can easily share the same callbacks and properties.
+      //
+      //      var events = api.get('/events').on('end', function(response) {
+      //        console.log(response.body);
+      //        events.next()
+      //        console.log(events.page());
+      //      })
+      //
+      //      events()
+      //
+      function pager() { request() }
+
+      // Sets or gets the current page
+      //
+      // Returns the pager
+      pager.page = function(v) {
+        if(!arguments.length) return page
+        page = v
+
+        return pager
+      }
+
+      // Sets or gets the items returned per page
+      //
+      // Returns the pager
+      pager.perpage = function(v) {
+        if(!arguments.length) return perpage
+        perpage = v
+
+        return pager
+      }
+
+      // Increments the page number by one and fires a requests for the next page
+      //
+      // Returns the pager
+      pager.next = function() {
+        page += 1
+        request()
+
+        return pager
+      }
+
+      // Decrements the page number by one and fires a request for the previous page
+      //
+      // Returns the pager
+      pager.prev = function() {
+        page -= 1
+        request()
+
+        return pager
+      }
+
+      // Determines if the server is reporting a next page of results
+      pager.hasnext = function() {
+        return hasnext;
+      }
+
+      // Determines if the server is reporting a previous page of results
+      pager.hasprev = function() {
+        return hasprev;
+      }
+
+      // Registers a callback for an event
+      //
+      //  Supported events:
+      //
+      // * `success` - Request was successful
+      // * `error` - Request returned an error
+      // * `end` - Request is complete
+      //
+      // Returns a pager
+      pager.on = function(event, callback) {
+        if (typeof callbacks[event] == 'undefined')
+          callbacks[event] = []
+
+        callbacks[event].push(callback)
+
+        return pager
+      }
+
+      // Unregisters a previously registered callback
+      pager.off = function(event, callback) {
+        if (callbacks[event] instanceof Array) {
+          var cbacks = callbacks[event], i = 0
+          for (i; i < cbacks.length; i++) {
+            if (cbacks[i] === callback) {
+              cbacks.splice(i, 1)
+              break
+            }
+          }
+        }
+
+        return pager
+      }
+
+      // Triggers a custom event
+      pager.trigger = function(event, data) {
+        if (callbacks[event] instanceof Array) {
+          callbacks[event].forEach(function(callback) {
+            callback.call(pager, data)
+          })
+        }
+
+        return pager
+      }
+
+      // Sets a request header
+      pager.set = function(key, val) {
+        headers[key] = val
+        return pager
+      }
+
+      return pager
+    }
+
+    // Sets or gets the GitHub API host
+    // Uses https://api.github.com by default
+    //
+    //      var gh = octo.api().host('https://api.github.com')
+    //
+    // Returns the api
+    api.host = function(val) {
+      if(!arguments.length) return host
+      host = val
+      return api
+    }
+
+    // Initializes a GET request to GitHub API v3
+    // Returns a pager
+    api.get = function(path, params) {
+      return new pager('get', path)
+    }
+
+    // Initializes a POST request to GitHub API v3
+    // Returns a pager
+    api.post = function(path, params) {
+      return new pager('post', path, params)
+    }
+
+    // Initializes a PATCH request to GitHub API v3
+    // Returns a pager
+    api.patch = function(path, params) {
+      return new pager('patch', path, params)
+    }
+
+    // Initializes a PUT request to GitHub API v3
+    // Returns a pager
+    api.put = function(path, params) {
+      return new pager('put', path, params)
+    }
+
+    // Initializes a DELETE request to GitHub API v3
+    // Returns a pager
+    api.delete = function(path, params) {
+      return new pager('delete', path, params)
+    }
+
+    // Returns the API rate limit as reported by GitHub
+    api.limit = function() {
+      return limit
+    }
+
+    // Returns the number of requests that can be made before the `limit` is reached
+    api.remaining = function() {
+      return remaining;
+    }
+
+    // Sets or gets the Basic Auth username
+    // Returns the api
+    api.username = function(v) {
+      if(!arguments.length) return username;
+      username = v
+
+      return api
+    }
+
+    // Sets or gets the Basic Auth password
+    // Returns the api
+    api.password = function(v) {
+      if(!arguments.length) return password;
+      password = v
+
+      return api
+    }
+
+    // Sets or gets an OAuth two token.  You can temporarily use Basic Auth to create a
+    // GitHub Authorization which will grant you an OAuth token.  You can use this token in
+    // your scripts
+    // Returns the api
+    api.token = function(v) {
+      if(!arguments.length) return token;
+      token = v
+
+      return api
+    }
+
+    return api
+  }
+
+  if("undefined" != typeof exports)
+    module.exports = octo
+  else
+    window.octo = octo
+
+})()
+
+});
+require.register("noflo-noflo-github/index.js", function(exports, require, module){
+
+});
+require.register("noflo-noflo-github/component.json", function(exports, require, module){
+module.exports = JSON.parse('{"name":"noflo-github","description":"GitHub service components for the NoFlo flow-based programming environment","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"noflo/noflo-github","dependencies":{"noflo/noflo":"*","bergie/octo":"*"},"scripts":["index.js","components/CreateRepository.coffee","components/CreateOrgRepository.coffee","components/GetRepository.coffee","components/GetContents.coffee","components/GetCurrentUser.coffee","components/GetUser.coffee","components/GetStargazers.coffee","components/SetContents.coffee"],"json":["component.json"],"noflo":{"icon":"github","components":{"CreateRepository":"components/CreateRepository.coffee","CreateOrgRepository":"components/CreateOrgRepository.coffee","GetRepository":"components/GetRepository.coffee","GetContents":"components/GetContents.coffee","GetCurrentUser":"components/GetCurrentUser.coffee","GetUser":"components/GetUser.coffee","GetStargazers":"components/GetStargazers.coffee","SetContents":"components/SetContents.coffee"}}}');
+});
+require.register("noflo-noflo-github/components/CreateRepository.js", function(exports, require, module){
+var CreateRepository, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+CreateRepository = (function(_super) {
+  __extends(CreateRepository, _super);
+
+  function CreateRepository() {
+    this.token = null;
+    this.inPorts = {
+      "in": new noflo.Port('string'),
+      token: new noflo.Port('string')
+    };
+    this.outPorts = {
+      out: new noflo.Port('object'),
+      error: new noflo.Port('string')
+    };
+    this.inPorts.token.on('data', (function(_this) {
+      return function(data) {
+        return _this.token = data;
+      };
+    })(this));
+    CreateRepository.__super__.constructor.call(this);
+  }
+
+  CreateRepository.prototype.doAsync = function(repo, callback) {
+    var api, request;
+    api = octo.api();
+    if (!this.token) {
+      callback(new Error('token required'));
+      return;
+    }
+    api.token(this.token);
+    request = api.post('/user/repos', {
+      name: repo
+    });
+    request.on('success', (function(_this) {
+      return function(res) {
+        _this.outPorts.out.beginGroup(repo);
+        _this.outPorts.out.send(res.body);
+        _this.outPorts.out.endGroup();
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        _this.outPorts.out.disconnect();
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return CreateRepository;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new CreateRepository;
+};
+
+});
+require.register("noflo-noflo-github/components/CreateOrgRepository.js", function(exports, require, module){
+var CreateOrgRepository, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+CreateOrgRepository = (function(_super) {
+  __extends(CreateOrgRepository, _super);
+
+  function CreateOrgRepository() {
+    this.token = null;
+    this.organization = null;
+    this.inPorts = {
+      "in": new noflo.Port,
+      org: new noflo.Port,
+      token: new noflo.Port
+    };
+    this.outPorts = {
+      out: new noflo.Port,
+      error: new noflo.Port
+    };
+    this.inPorts.org.on('data', (function(_this) {
+      return function(data) {
+        return _this.organization = data;
+      };
+    })(this));
+    this.inPorts.token.on('data', (function(_this) {
+      return function(data) {
+        return _this.token = data;
+      };
+    })(this));
+    CreateOrgRepository.__super__.constructor.call(this);
+  }
+
+  CreateOrgRepository.prototype.doAsync = function(repo, callback) {
+    var api, request;
+    api = octo.api();
+    if (!this.organization) {
+      callback(new Error('organization name required'));
+      return;
+    }
+    if (!this.token) {
+      callback(new Error('token required'));
+      return;
+    }
+    api.token(this.token);
+    request = api.post("/orgs/" + this.organization + "/repos", {
+      name: repo
+    });
+    request.on('success', (function(_this) {
+      return function(res) {
+        _this.outPorts.out.beginGroup(repo);
+        _this.outPorts.out.send(res.body);
+        _this.outPorts.out.endGroup();
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        _this.outPorts.out.disconnect();
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return CreateOrgRepository;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new CreateOrgRepository;
+};
+
+});
+require.register("noflo-noflo-github/components/GetRepository.js", function(exports, require, module){
+var GetRepository, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+GetRepository = (function(_super) {
+  __extends(GetRepository, _super);
+
+  GetRepository.prototype.description = 'Get information about a repository';
+
+  function GetRepository() {
+    this.token = null;
+    this.inPorts = {
+      "in": new noflo.Port('string'),
+      token: new noflo.Port('string')
+    };
+    this.outPorts = {
+      out: new noflo.Port('object'),
+      error: new noflo.Port('object')
+    };
+    this.inPorts.token.on('data', (function(_this) {
+      return function(data) {
+        return _this.token = data;
+      };
+    })(this));
+    GetRepository.__super__.constructor.call(this);
+  }
+
+  GetRepository.prototype.doAsync = function(repo, callback) {
+    var api, request;
+    api = octo.api();
+    if (this.token) {
+      api.token(this.token);
+    }
+    request = api.get("/repos/" + repo);
+    request.on('success', (function(_this) {
+      return function(res) {
+        _this.outPorts.out.beginGroup(repo);
+        _this.outPorts.out.send(res.body);
+        _this.outPorts.out.endGroup();
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        _this.outPorts.out.disconnect();
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return GetRepository;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new GetRepository;
+};
+
+});
+require.register("noflo-noflo-github/components/GetContents.js", function(exports, require, module){
+var GetContents, atob, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+if (!noflo.isBrowser()) {
+  atob = require('atob');
+} else {
+  atob = window.atob;
+}
+
+GetContents = (function(_super) {
+  __extends(GetContents, _super);
+
+  GetContents.prototype.description = 'Get contents of a file or a directory';
+
+  function GetContents() {
+    this.token = null;
+    this.repo = null;
+    this.sendRepo = true;
+    this.inPorts = {
+      repository: new noflo.Port('string'),
+      path: new noflo.Port('string'),
+      token: new noflo.Port('string'),
+      sendrepo: new noflo.Port('boolean')
+    };
+    this.outPorts = {
+      out: new noflo.Port('string'),
+      files: new noflo.Port('object'),
+      error: new noflo.Port('object')
+    };
+    this.inPorts.repository.on('data', (function(_this) {
+      return function(data) {
+        return _this.repo = data;
+      };
+    })(this));
+    this.inPorts.sendrepo.on('data', (function(_this) {
+      return function(sendRepo) {
+        _this.sendRepo = sendRepo;
+      };
+    })(this));
+    this.inPorts.token.on('data', (function(_this) {
+      return function(data) {
+        return _this.token = data;
+      };
+    })(this));
+    GetContents.__super__.constructor.call(this, 'path');
+  }
+
+  GetContents.prototype.doAsync = function(path, callback) {
+    var api, repo, request;
+    api = octo.api();
+    if (this.token) {
+      api.token(this.token);
+    }
+    if (!this.repo) {
+      callback(new Error('repository name required'));
+    }
+    repo = this.repo;
+    request = api.get("/repos/" + repo + "/contents/" + path);
+    request.on('success', (function(_this) {
+      return function(res) {
+        var file, _i, _len, _ref;
+        if (!res.body.content) {
+          if (toString.call(res.body) !== '[object Array]') {
+            callback(new Error('content not found'));
+            return;
+          }
+          if (!_this.outPorts.files.isAttached()) {
+            callback(new Error('content not found'));
+            return;
+          }
+          if (_this.sendRepo) {
+            _this.outPorts.files.beginGroup(repo);
+          }
+          _ref = res.body;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            file = _ref[_i];
+            _this.outPorts.files.send(file);
+          }
+          if (_this.sendRepo) {
+            _this.outPorts.files.endGroup();
+          }
+          _this.outPorts.files.disconnect();
+          callback();
+          return;
+        }
+        if (_this.sendRepo) {
+          _this.outPorts.out.beginGroup(repo);
+        }
+        _this.outPorts.out.beginGroup(path);
+        _this.outPorts.out.send(atob(res.body.content.replace(/\s/g, '')));
+        _this.outPorts.out.endGroup();
+        if (_this.sendRepo) {
+          _this.outPorts.out.endGroup();
+        }
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        _this.outPorts.out.disconnect();
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return GetContents;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new GetContents;
+};
+
+});
+require.register("noflo-noflo-github/components/GetCurrentUser.js", function(exports, require, module){
+var GetCurrentUser, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+GetCurrentUser = (function(_super) {
+  __extends(GetCurrentUser, _super);
+
+  function GetCurrentUser() {
+    this.token = null;
+    this.inPorts = {
+      token: new noflo.Port
+    };
+    this.outPorts = {
+      out: new noflo.Port,
+      error: new noflo.Port
+    };
+    GetCurrentUser.__super__.constructor.call(this, 'token');
+  }
+
+  GetCurrentUser.prototype.doAsync = function(token, callback) {
+    var api, request;
+    api = octo.api();
+    api.token(token);
+    request = api.get("/user");
+    request.on('success', (function(_this) {
+      return function(res) {
+        _this.outPorts.out.send(res.body);
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        _this.outPorts.out.disconnect();
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return GetCurrentUser;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new GetCurrentUser;
+};
+
+});
+require.register("noflo-noflo-github/components/GetUser.js", function(exports, require, module){
+var GetUser, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+GetUser = (function(_super) {
+  __extends(GetUser, _super);
+
+  function GetUser() {
+    this.token = null;
+    this.inPorts = {
+      user: new noflo.Port,
+      token: new noflo.Port
+    };
+    this.outPorts = {
+      out: new noflo.Port,
+      error: new noflo.Port
+    };
+    this.inPorts.token.on('data', (function(_this) {
+      return function(data) {
+        return _this.token = data;
+      };
+    })(this));
+    GetUser.__super__.constructor.call(this, 'user');
+  }
+
+  GetUser.prototype.doAsync = function(user, callback) {
+    var api, request;
+    api = octo.api();
+    if (this.token) {
+      api.token(this.token);
+    }
+    request = api.get("/users/" + user);
+    request.on('success', (function(_this) {
+      return function(res) {
+        _this.outPorts.out.beginGroup(user);
+        _this.outPorts.out.send(res.body);
+        _this.outPorts.out.endGroup();
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        _this.outPorts.out.disconnect();
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return GetUser;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new GetUser;
+};
+
+});
+require.register("noflo-noflo-github/components/GetStargazers.js", function(exports, require, module){
+var GetStargazers, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+GetStargazers = (function(_super) {
+  __extends(GetStargazers, _super);
+
+  function GetStargazers() {
+    this.token = null;
+    this.inPorts = {
+      repository: new noflo.Port,
+      token: new noflo.Port
+    };
+    this.outPorts = {
+      out: new noflo.Port,
+      error: new noflo.Port
+    };
+    this.inPorts.token.on('data', (function(_this) {
+      return function(data) {
+        return _this.token = data;
+      };
+    })(this));
+    GetStargazers.__super__.constructor.call(this, 'repository');
+  }
+
+  GetStargazers.prototype.doAsync = function(repository, callback) {
+    var api, request;
+    api = octo.api();
+    if (this.token) {
+      api.token(this.token);
+    }
+    request = api.get("/repos/" + repository + "/stargazers");
+    request.on('success', (function(_this) {
+      return function(res) {
+        var user, _i, _len, _ref;
+        _this.outPorts.out.beginGroup(repository);
+        _ref = res.body;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          user = _ref[_i];
+          _this.outPorts.out.send(user);
+        }
+        _this.outPorts.out.endGroup();
+        if (request.hasnext()) {
+          return request.next();
+        }
+        _this.outPorts.out.disconnect();
+        return callback();
+      };
+    })(this));
+    request.on('error', (function(_this) {
+      return function(err) {
+        return callback(err.body);
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return request();
+  };
+
+  return GetStargazers;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new GetStargazers;
+};
+
+});
+require.register("noflo-noflo-github/components/SetContents.js", function(exports, require, module){
+var SetContents, btoa, noflo, octo,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+noflo = require('noflo');
+
+octo = require('octo');
+
+if (!noflo.isBrowser()) {
+  btoa = require('btoa');
+} else {
+  btoa = window.btoa;
+}
+
+SetContents = (function(_super) {
+  __extends(SetContents, _super);
+
+  SetContents.prototype.description = 'Create or update a file in the repository';
+
+  function SetContents() {
+    this.token = null;
+    this.message = null;
+    this.repo = null;
+    this.path = null;
+    this.inPorts = {
+      "in": new noflo.Port('string'),
+      token: new noflo.Port('string'),
+      message: new noflo.Port('string'),
+      repository: new noflo.Port('string'),
+      path: new noflo.Port('string')
+    };
+    this.outPorts = {
+      out: new noflo.Port('object'),
+      error: new noflo.Port('object')
+    };
+    this.inPorts.token.on('data', (function(_this) {
+      return function(token) {
+        _this.token = token;
+      };
+    })(this));
+    this.inPorts.message.on('data', (function(_this) {
+      return function(message) {
+        _this.message = message;
+      };
+    })(this));
+    this.inPorts.repository.on('data', (function(_this) {
+      return function(repo) {
+        _this.repo = repo;
+      };
+    })(this));
+    this.inPorts.path.on('data', (function(_this) {
+      return function(path) {
+        _this.path = path;
+      };
+    })(this));
+    SetContents.__super__.constructor.call(this, 'in');
+  }
+
+  SetContents.prototype.doAsync = function(contents, callback) {
+    var api, message, path, repo, shaReq;
+    if (!this.repo) {
+      callback(new Error('repository name required'));
+    }
+    if (!this.path) {
+      callback(new Error('file path required'));
+    }
+    if (!this.message) {
+      this.message = '';
+    }
+    repo = this.repo;
+    path = this.path;
+    message = this.message;
+    api = octo.api();
+    if (this.token) {
+      api.token(this.token);
+    }
+    shaReq = api.get("/repos/" + repo + "/contents/" + path);
+    shaReq.on('success', (function(_this) {
+      return function(shaRes) {
+        var updateReq;
+        updateReq = api.put("/repos/" + repo + "/contents/" + path, {
+          path: path,
+          message: message,
+          content: btoa(contents),
+          sha: shaRes.body.sha
+        });
+        updateReq.on('success', function(updateRes) {
+          _this.outPorts.out.beginGroup(path);
+          _this.outPorts.out.send(updateRes.sha);
+          _this.outPorts.out.endGroup();
+          _this.outPorts.out.disconnect();
+          return callback();
+        });
+        updateReq.on('error', function(error) {
+          _this.outPorts.out.disconnect();
+          return callback(err.body);
+        });
+        return updateReq();
+      };
+    })(this));
+    shaReq.on('error', (function(_this) {
+      return function() {
+        var createReq;
+        createReq = api.put("/repos/" + repo + "/contents/" + path, {
+          path: path,
+          message: message,
+          content: btoa(contents)
+        });
+        createReq.on('success', function(createRes) {
+          _this.outPorts.out.beginGroup(path);
+          _this.outPorts.out.send(createRes.sha);
+          _this.outPorts.out.endGroup();
+          _this.outPorts.out.disconnect();
+          return callback();
+        });
+        createReq.on('error', function(error) {
+          _this.outPorts.out.disconnect();
+          return callback(err.body);
+        });
+        return createReq();
+      };
+    })(this));
+    this.outPorts.out.connect();
+    return shaReq();
+  };
+
+  return SetContents;
+
+})(noflo.AsyncComponent);
+
+exports.getComponent = function() {
+  return new SetContents;
+};
+
+});
 require.register("d4tocchini-noflo-draggabilly/index.js", function(exports, require, module){
 /*
  * This file can be used for general library features that are exposed as CommonJS modules
@@ -31598,8 +33574,9 @@ exports.getComponent = function() {
 
 });
 require.register("noflo-ui-preview/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"noflo-ui-preview","description":"NoFlo runtime environment for client-side previews","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"noflo/noflo-ui","keywords":[],"dependencies":{"noflo/noflo":"*","noflo/noflo-runtime-iframe":"*","noflo/noflo-ajax":"*","noflo/noflo-core":"*","noflo/noflo-css":"*","noflo/noflo-dom":"*","noflo/noflo-flow":"*","noflo/noflo-gestures":"*","noflo/noflo-groups":"*","noflo/noflo-interaction":"*","noflo/noflo-localstorage":"*","noflo/noflo-math":"*","noflo/noflo-objects":"*","noflo/noflo-packets":"*","noflo/noflo-physics":"*","noflo/noflo-routers":"*","noflo/noflo-strings":"*","noflo/noflo-websocket":"*","noflo/noflo-indexeddb":"*","d4tocchini/noflo-draggabilly":"*","forresto/noflo-gum":"*","forresto/noflo-seriously":"*"},"json":["component.json"],"files":["iframe.html"]}');
+module.exports = JSON.parse('{"name":"noflo-ui-preview","description":"NoFlo runtime environment for client-side previews","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"noflo/noflo-ui","keywords":[],"dependencies":{"noflo/noflo":"*","noflo/noflo-runtime-iframe":"*","noflo/noflo-ajax":"*","noflo/noflo-core":"*","noflo/noflo-css":"*","noflo/noflo-dom":"*","noflo/noflo-flow":"*","noflo/noflo-gestures":"*","noflo/noflo-groups":"*","noflo/noflo-interaction":"*","noflo/noflo-localstorage":"*","noflo/noflo-math":"*","noflo/noflo-objects":"*","noflo/noflo-packets":"*","noflo/noflo-physics":"*","noflo/noflo-routers":"*","noflo/noflo-strings":"*","noflo/noflo-websocket":"*","noflo/noflo-indexeddb":"*","noflo/noflo-github":"*","d4tocchini/noflo-draggabilly":"*","forresto/noflo-gum":"*","forresto/noflo-seriously":"*"},"json":["component.json"],"files":["iframe.html"]}');
 });
+
 
 
 
@@ -32850,6 +34827,53 @@ require.alias("noflo-fbp/lib/fbp.js", "noflo-noflo/deps/fbp/lib/fbp.js");
 require.alias("noflo-fbp/lib/fbp.js", "noflo-noflo/deps/fbp/index.js");
 require.alias("noflo-fbp/lib/fbp.js", "noflo-fbp/index.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo/index.js");
+require.alias("noflo-noflo-github/index.js", "noflo-ui-preview/deps/noflo-github/index.js");
+require.alias("noflo-noflo-github/component.json", "noflo-ui-preview/deps/noflo-github/component.json");
+require.alias("noflo-noflo-github/components/CreateRepository.js", "noflo-ui-preview/deps/noflo-github/components/CreateRepository.js");
+require.alias("noflo-noflo-github/components/CreateOrgRepository.js", "noflo-ui-preview/deps/noflo-github/components/CreateOrgRepository.js");
+require.alias("noflo-noflo-github/components/GetRepository.js", "noflo-ui-preview/deps/noflo-github/components/GetRepository.js");
+require.alias("noflo-noflo-github/components/GetContents.js", "noflo-ui-preview/deps/noflo-github/components/GetContents.js");
+require.alias("noflo-noflo-github/components/GetCurrentUser.js", "noflo-ui-preview/deps/noflo-github/components/GetCurrentUser.js");
+require.alias("noflo-noflo-github/components/GetUser.js", "noflo-ui-preview/deps/noflo-github/components/GetUser.js");
+require.alias("noflo-noflo-github/components/GetStargazers.js", "noflo-ui-preview/deps/noflo-github/components/GetStargazers.js");
+require.alias("noflo-noflo-github/components/SetContents.js", "noflo-ui-preview/deps/noflo-github/components/SetContents.js");
+require.alias("noflo-noflo-github/index.js", "noflo-github/index.js");
+require.alias("noflo-noflo/component.json", "noflo-noflo-github/deps/noflo/component.json");
+require.alias("noflo-noflo/src/lib/Graph.js", "noflo-noflo-github/deps/noflo/src/lib/Graph.js");
+require.alias("noflo-noflo/src/lib/InternalSocket.js", "noflo-noflo-github/deps/noflo/src/lib/InternalSocket.js");
+require.alias("noflo-noflo/src/lib/BasePort.js", "noflo-noflo-github/deps/noflo/src/lib/BasePort.js");
+require.alias("noflo-noflo/src/lib/InPort.js", "noflo-noflo-github/deps/noflo/src/lib/InPort.js");
+require.alias("noflo-noflo/src/lib/OutPort.js", "noflo-noflo-github/deps/noflo/src/lib/OutPort.js");
+require.alias("noflo-noflo/src/lib/Ports.js", "noflo-noflo-github/deps/noflo/src/lib/Ports.js");
+require.alias("noflo-noflo/src/lib/Port.js", "noflo-noflo-github/deps/noflo/src/lib/Port.js");
+require.alias("noflo-noflo/src/lib/ArrayPort.js", "noflo-noflo-github/deps/noflo/src/lib/ArrayPort.js");
+require.alias("noflo-noflo/src/lib/Component.js", "noflo-noflo-github/deps/noflo/src/lib/Component.js");
+require.alias("noflo-noflo/src/lib/AsyncComponent.js", "noflo-noflo-github/deps/noflo/src/lib/AsyncComponent.js");
+require.alias("noflo-noflo/src/lib/LoggingComponent.js", "noflo-noflo-github/deps/noflo/src/lib/LoggingComponent.js");
+require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-github/deps/noflo/src/lib/ComponentLoader.js");
+require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-github/deps/noflo/src/lib/NoFlo.js");
+require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-github/deps/noflo/src/lib/Network.js");
+require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-github/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-github/deps/noflo/src/components/Graph.js");
+require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-github/deps/noflo/index.js");
+require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
+
+require.alias("component-underscore/index.js", "noflo-noflo/deps/underscore/index.js");
+
+require.alias("noflo-fbp/lib/fbp.js", "noflo-noflo/deps/fbp/lib/fbp.js");
+require.alias("noflo-fbp/lib/fbp.js", "noflo-noflo/deps/fbp/index.js");
+require.alias("noflo-fbp/lib/fbp.js", "noflo-fbp/index.js");
+require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo/index.js");
+require.alias("bergie-octo/octo.js", "noflo-noflo-github/deps/octo/octo.js");
+require.alias("bergie-octo/octo.js", "noflo-noflo-github/deps/octo/index.js");
+require.alias("visionmedia-superagent/lib/client.js", "bergie-octo/deps/superagent/lib/client.js");
+require.alias("visionmedia-superagent/lib/client.js", "bergie-octo/deps/superagent/index.js");
+require.alias("component-emitter/index.js", "visionmedia-superagent/deps/emitter/index.js");
+
+require.alias("component-reduce/index.js", "visionmedia-superagent/deps/reduce/index.js");
+
+require.alias("visionmedia-superagent/lib/client.js", "visionmedia-superagent/index.js");
+require.alias("bergie-octo/octo.js", "bergie-octo/index.js");
 require.alias("d4tocchini-noflo-draggabilly/index.js", "noflo-ui-preview/deps/noflo-draggabilly/index.js");
 require.alias("d4tocchini-noflo-draggabilly/component.json", "noflo-ui-preview/deps/noflo-draggabilly/component.json");
 require.alias("d4tocchini-noflo-draggabilly/components/Draggabilly.js", "noflo-ui-preview/deps/noflo-draggabilly/components/Draggabilly.js");

@@ -5,56 +5,103 @@
 
 
   TheGraph.PortMenu = React.createClass({
-    componentDidMount: function () {
-      this.getDOMNode().addEventListener("tap", this.edgeStart);
-    },
-    edgeStart: function (event) {
-      // Don't tap graph
+    radius: 72,
+    stopPropagation: function (event) {
+      // Don't drag graph
       event.stopPropagation();
+    },
+    componentDidMount: function () {
+      this.refs.north.getDOMNode().addEventListener("tap", this.exportThisPort);
+    },
+    exportThisPort: function () {
+      var graph = this.props.graph;
+      var collection = this.props.isIn ? graph.inports : graph.outports;
 
-      var edgeStartEvent = new CustomEvent('the-graph-edge-start', { 
-        detail: {
-          isIn: this.props.isIn,
-          port: this.props.label,
-          process: this.props.processKey,
-          route: this.props.route
-        },
-        bubbles: true
-      });
-      this.getDOMNode().dispatchEvent(edgeStartEvent);
+      var pub = this.props.portKey;
+      var count = 0;
+      // Make sure public is unique
+      while (collection[pub]) {
+        pub = this.props.portKey + count;
+        count++;
+      } 
+      var metadata = {
+        x: this.props.portX + (this.props.isIn ? -144 : 72),
+        y: this.props.portY - TheGraph.nodeSize/2
+      };
+      if (this.props.isIn) {
+        this.props.graph.addInport(pub, this.props.processKey, this.props.portKey, metadata);
+      } else {
+        this.props.graph.addOutport(pub, this.props.processKey, this.props.portKey, metadata);
+      }
     },
     render: function() {
       return (
         React.DOM.g(
           {
-            className: "context-port click context-port-"+(this.props.isIn ? "in" : "out")
+            className: "context-export",
+            transform: "translate("+this.props.x+","+this.props.y+")"
           },
-          React.DOM.rect({
-            className: "context-port-bg",
-            rx: TheGraph.nodeRadius,
-            ry: TheGraph.nodeRadius,
-            x: this.props.x + (this.props.isIn ? -120 : 0),
-            y: this.props.y - TheGraph.contextPortSize/2,
-            width: 120,
-            height: TheGraph.contextPortSize-1
+          React.DOM.path({
+            className: "context-arc",
+            d: TheGraph.arcs.w4
+          }),
+          React.DOM.path({
+            className: "context-arc",
+            d: TheGraph.arcs.e4
+          }),
+          React.DOM.g(
+            {
+              ref: "north",
+              className: "context-slice context-node-info click",
+              onMouseDown: this.stopPropagation
+            },
+            React.DOM.path({
+              className: "context-arc context-node-info-bg",
+              d: TheGraph.arcs.n4
+            }),
+            React.DOM.text({
+              className: "icon context-icon context-node-info-icon",
+              x: 0,
+              y: -48,
+              children: TheGraph.FONT_AWESOME[ (this.props.isIn ? "sign-in" : "sign-out") ]
+            }),
+            React.DOM.text({
+              className: "context-arc-icon-label",
+              x: 0,
+              y: -35,
+              children: "export"
+            })
+          ),
+          React.DOM.path({
+            className: "context-arc context-node-delete-bg",
+            d: TheGraph.arcs.s4
+          }),
+          React.DOM.path({
+            className: "context-circle-x",
+            d: "M -51 -51 L 51 51 M -51 51 L 51 -51"
           }),
           React.DOM.circle({
-            className: "context-port-hole stroke route"+this.props.route,
-            cx: this.props.x,
-            cy: this.props.y,
-            r: 10
+            className: "context-circle",
+            r: this.radius
           }),
-          // React.DOM.circle({
-          //   className: "fill route"+this.props.route,
-          //   cx: this.props.x,
-          //   cy: this.props.y,
-          //   r: 5
-          // }),
+          React.DOM.rect({
+            className: "context-node-rect",
+            x: -24,
+            y: -24,
+            width: 48,
+            height: 48,
+            rx: TheGraph.nodeRadius,
+            ry: TheGraph.nodeRadius
+          }),
           React.DOM.text({
-            className: "context-port-label fill route"+this.props.route,
-            x: this.props.x + (this.props.isIn ? -20 : 20),
-            y: this.props.y,
-            children: this.props.label
+            className: "icon context-node-icon fill route"+this.props.route,
+            children: TheGraph.FONT_AWESOME[ (this.props.isIn ? "sign-in" : "sign-out") ]
+          }),
+          React.DOM.text({
+            className: "context-node-label",
+            x: 0,
+            y: 35,
+            children: this.props.portKey
           })
         )
       );

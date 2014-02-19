@@ -18,15 +18,23 @@
     },
     componentDidMount: function () {
       // Context menu
+      this.getDOMNode().addEventListener("pointerdown", this.stopPropagationSecondary);
+      this.getDOMNode().addEventListener("pointerup", this.stopPropagationSecondary);
       this.getDOMNode().addEventListener("contextmenu", this.showContext);
       this.getDOMNode().addEventListener("hold", this.showContext);
+    },
+    stopPropagationSecondary: function (event) {
+      // HACK to not tap graph
+      if (event.buttons && event.buttons===2) {
+        event.stopPropagation();
+      }
     },
     showContext: function (event) {
       // Don't show native context menu
       event.preventDefault();
 
-      var x = event.pageX;
-      var y = event.pageY;
+      var x = event.clientX;
+      var y = event.clientY;
 
       if (x === undefined) {
         x = this.pointerX;
@@ -44,6 +52,18 @@
       this.getDOMNode().dispatchEvent(contextEvent);
     },
     getContext: function (x, y) {
+      // If this edge represents an export
+      if (this.props.export) {
+        return TheGraph.ExportMenu({
+          graph: this.props.graph,
+          export: this.props.export,
+          exportKey: this.props.exportKey,
+          isIn: this.props.isIn,
+          x: x,
+          y: y
+        });
+      }
+
       return TheGraph.EdgeMenu({
         key: "context." + this.props.key,
         modal: true,

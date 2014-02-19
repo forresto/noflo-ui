@@ -1606,7 +1606,7 @@ module.exports = (function(){
       }
       
       function parse_line() {
-        var result0, result1, result2, result3, result4, result5, result6;
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8;
         var pos0, pos1;
         
         pos0 = pos;
@@ -1623,26 +1623,26 @@ module.exports = (function(){
             }
           }
           if (result1 !== null) {
-            if (/^[A-Z.0-9_]/.test(input.charAt(pos))) {
+            if (/^[A-Za-z.0-9_]/.test(input.charAt(pos))) {
               result3 = input.charAt(pos);
               pos++;
             } else {
               result3 = null;
               if (reportFailures === 0) {
-                matchFailed("[A-Z.0-9_]");
+                matchFailed("[A-Za-z.0-9_]");
               }
             }
             if (result3 !== null) {
               result2 = [];
               while (result3 !== null) {
                 result2.push(result3);
-                if (/^[A-Z.0-9_]/.test(input.charAt(pos))) {
+                if (/^[A-Za-z.0-9_]/.test(input.charAt(pos))) {
                   result3 = input.charAt(pos);
                   pos++;
                 } else {
                   result3 = null;
                   if (reportFailures === 0) {
-                    matchFailed("[A-Z.0-9_]");
+                    matchFailed("[A-Za-z.0-9_]");
                   }
                 }
               }
@@ -1729,64 +1729,138 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos0 = pos;
-          result0 = parse_comment();
+          pos1 = pos;
+          result0 = parse__();
           if (result0 !== null) {
-            if (/^[\n\r\u2028\u2029]/.test(input.charAt(pos))) {
-              result1 = input.charAt(pos);
-              pos++;
+            if (input.substr(pos, 7) === "INPORT=") {
+              result1 = "INPORT=";
+              pos += 7;
             } else {
               result1 = null;
               if (reportFailures === 0) {
-                matchFailed("[\\n\\r\\u2028\\u2029]");
+                matchFailed("\"INPORT=\"");
               }
             }
-            result1 = result1 !== null ? result1 : "";
             if (result1 !== null) {
-              result0 = [result0, result1];
-            } else {
-              result0 = null;
-              pos = pos0;
-            }
-          } else {
-            result0 = null;
-            pos = pos0;
-          }
-          if (result0 === null) {
-            pos0 = pos;
-            result0 = parse__();
-            if (result0 !== null) {
-              if (/^[\n\r\u2028\u2029]/.test(input.charAt(pos))) {
-                result1 = input.charAt(pos);
+              if (/^[A-Za-z0-9_]/.test(input.charAt(pos))) {
+                result3 = input.charAt(pos);
                 pos++;
               } else {
-                result1 = null;
+                result3 = null;
                 if (reportFailures === 0) {
-                  matchFailed("[\\n\\r\\u2028\\u2029]");
+                  matchFailed("[A-Za-z0-9_]");
                 }
               }
-              if (result1 !== null) {
-                result0 = [result0, result1];
+              if (result3 !== null) {
+                result2 = [];
+                while (result3 !== null) {
+                  result2.push(result3);
+                  if (/^[A-Za-z0-9_]/.test(input.charAt(pos))) {
+                    result3 = input.charAt(pos);
+                    pos++;
+                  } else {
+                    result3 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("[A-Za-z0-9_]");
+                    }
+                  }
+                }
               } else {
-                result0 = null;
-                pos = pos0;
+                result2 = null;
               }
-            } else {
-              result0 = null;
-              pos = pos0;
-            }
-            if (result0 === null) {
-              pos0 = pos;
-              pos1 = pos;
-              result0 = parse__();
-              if (result0 !== null) {
-                result1 = parse_connection();
-                if (result1 !== null) {
-                  result2 = parse__();
-                  if (result2 !== null) {
-                    result3 = parse_LineTerminator();
-                    result3 = result3 !== null ? result3 : "";
-                    if (result3 !== null) {
-                      result0 = [result0, result1, result2, result3];
+              if (result2 !== null) {
+                if (input.charCodeAt(pos) === 46) {
+                  result3 = ".";
+                  pos++;
+                } else {
+                  result3 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\".\"");
+                  }
+                }
+                if (result3 !== null) {
+                  if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                    result5 = input.charAt(pos);
+                    pos++;
+                  } else {
+                    result5 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("[A-Z0-9_]");
+                    }
+                  }
+                  if (result5 !== null) {
+                    result4 = [];
+                    while (result5 !== null) {
+                      result4.push(result5);
+                      if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                        result5 = input.charAt(pos);
+                        pos++;
+                      } else {
+                        result5 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("[A-Z0-9_]");
+                        }
+                      }
+                    }
+                  } else {
+                    result4 = null;
+                  }
+                  if (result4 !== null) {
+                    if (input.charCodeAt(pos) === 58) {
+                      result5 = ":";
+                      pos++;
+                    } else {
+                      result5 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\":\"");
+                      }
+                    }
+                    if (result5 !== null) {
+                      if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                        result7 = input.charAt(pos);
+                        pos++;
+                      } else {
+                        result7 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("[A-Z0-9_]");
+                        }
+                      }
+                      if (result7 !== null) {
+                        result6 = [];
+                        while (result7 !== null) {
+                          result6.push(result7);
+                          if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                            result7 = input.charAt(pos);
+                            pos++;
+                          } else {
+                            result7 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("[A-Z0-9_]");
+                            }
+                          }
+                        }
+                      } else {
+                        result6 = null;
+                      }
+                      if (result6 !== null) {
+                        result7 = parse__();
+                        if (result7 !== null) {
+                          result8 = parse_LineTerminator();
+                          result8 = result8 !== null ? result8 : "";
+                          if (result8 !== null) {
+                            result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8];
+                          } else {
+                            result0 = null;
+                            pos = pos1;
+                          }
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
                     } else {
                       result0 = null;
                       pos = pos1;
@@ -1803,11 +1877,267 @@ module.exports = (function(){
                 result0 = null;
                 pos = pos1;
               }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, node, port, pub) {return parser.registerInports(node.join(""),port.join(""),pub.join(""))})(pos0, result0[2], result0[4], result0[6]);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+          if (result0 === null) {
+            pos0 = pos;
+            pos1 = pos;
+            result0 = parse__();
+            if (result0 !== null) {
+              if (input.substr(pos, 8) === "OUTPORT=") {
+                result1 = "OUTPORT=";
+                pos += 8;
+              } else {
+                result1 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"OUTPORT=\"");
+                }
+              }
+              if (result1 !== null) {
+                if (/^[A-Za-z0-9_]/.test(input.charAt(pos))) {
+                  result3 = input.charAt(pos);
+                  pos++;
+                } else {
+                  result3 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("[A-Za-z0-9_]");
+                  }
+                }
+                if (result3 !== null) {
+                  result2 = [];
+                  while (result3 !== null) {
+                    result2.push(result3);
+                    if (/^[A-Za-z0-9_]/.test(input.charAt(pos))) {
+                      result3 = input.charAt(pos);
+                      pos++;
+                    } else {
+                      result3 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("[A-Za-z0-9_]");
+                      }
+                    }
+                  }
+                } else {
+                  result2 = null;
+                }
+                if (result2 !== null) {
+                  if (input.charCodeAt(pos) === 46) {
+                    result3 = ".";
+                    pos++;
+                  } else {
+                    result3 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\".\"");
+                    }
+                  }
+                  if (result3 !== null) {
+                    if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                      result5 = input.charAt(pos);
+                      pos++;
+                    } else {
+                      result5 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("[A-Z0-9_]");
+                      }
+                    }
+                    if (result5 !== null) {
+                      result4 = [];
+                      while (result5 !== null) {
+                        result4.push(result5);
+                        if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                          result5 = input.charAt(pos);
+                          pos++;
+                        } else {
+                          result5 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("[A-Z0-9_]");
+                          }
+                        }
+                      }
+                    } else {
+                      result4 = null;
+                    }
+                    if (result4 !== null) {
+                      if (input.charCodeAt(pos) === 58) {
+                        result5 = ":";
+                        pos++;
+                      } else {
+                        result5 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\":\"");
+                        }
+                      }
+                      if (result5 !== null) {
+                        if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                          result7 = input.charAt(pos);
+                          pos++;
+                        } else {
+                          result7 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("[A-Z0-9_]");
+                          }
+                        }
+                        if (result7 !== null) {
+                          result6 = [];
+                          while (result7 !== null) {
+                            result6.push(result7);
+                            if (/^[A-Z0-9_]/.test(input.charAt(pos))) {
+                              result7 = input.charAt(pos);
+                              pos++;
+                            } else {
+                              result7 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("[A-Z0-9_]");
+                              }
+                            }
+                          }
+                        } else {
+                          result6 = null;
+                        }
+                        if (result6 !== null) {
+                          result7 = parse__();
+                          if (result7 !== null) {
+                            result8 = parse_LineTerminator();
+                            result8 = result8 !== null ? result8 : "";
+                            if (result8 !== null) {
+                              result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8];
+                            } else {
+                              result0 = null;
+                              pos = pos1;
+                            }
+                          } else {
+                            result0 = null;
+                            pos = pos1;
+                          }
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, node, port, pub) {return parser.registerOutports(node.join(""),port.join(""),pub.join(""))})(pos0, result0[2], result0[4], result0[6]);
+            }
+            if (result0 === null) {
+              pos = pos0;
+            }
+            if (result0 === null) {
+              pos0 = pos;
+              result0 = parse_comment();
               if (result0 !== null) {
-                result0 = (function(offset, edges) {return parser.registerEdges(edges);})(pos0, result0[1]);
+                if (/^[\n\r\u2028\u2029]/.test(input.charAt(pos))) {
+                  result1 = input.charAt(pos);
+                  pos++;
+                } else {
+                  result1 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("[\\n\\r\\u2028\\u2029]");
+                  }
+                }
+                result1 = result1 !== null ? result1 : "";
+                if (result1 !== null) {
+                  result0 = [result0, result1];
+                } else {
+                  result0 = null;
+                  pos = pos0;
+                }
+              } else {
+                result0 = null;
+                pos = pos0;
               }
               if (result0 === null) {
-                pos = pos0;
+                pos0 = pos;
+                result0 = parse__();
+                if (result0 !== null) {
+                  if (/^[\n\r\u2028\u2029]/.test(input.charAt(pos))) {
+                    result1 = input.charAt(pos);
+                    pos++;
+                  } else {
+                    result1 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("[\\n\\r\\u2028\\u2029]");
+                    }
+                  }
+                  if (result1 !== null) {
+                    result0 = [result0, result1];
+                  } else {
+                    result0 = null;
+                    pos = pos0;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos0;
+                }
+                if (result0 === null) {
+                  pos0 = pos;
+                  pos1 = pos;
+                  result0 = parse__();
+                  if (result0 !== null) {
+                    result1 = parse_connection();
+                    if (result1 !== null) {
+                      result2 = parse__();
+                      if (result2 !== null) {
+                        result3 = parse_LineTerminator();
+                        result3 = result3 !== null ? result3 : "";
+                        if (result3 !== null) {
+                          result0 = [result0, result1, result2, result3];
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                  if (result0 !== null) {
+                    result0 = (function(offset, edges) {return parser.registerEdges(edges);})(pos0, result0[1]);
+                  }
+                  if (result0 === null) {
+                    pos = pos0;
+                  }
+                }
               }
             }
           }
@@ -2574,10 +2904,11 @@ module.exports = (function(){
         var parser, edges, nodes; 
       
         parser = this;
+        delete parser.exports;
+        delete parser.inports;
+        delete parser.outports;
       
         edges = parser.edges = [];
-        
-        parser.exports = []
       
         nodes = {};
       
@@ -2595,7 +2926,7 @@ module.exports = (function(){
         }
       
         parser.getResult = function () {
-          return {processes:nodes, connections:parser.processEdges(), exports:parser.exports};
+          return {processes:nodes, connections:parser.processEdges(), exports:parser.exports, inports: parser.inports, outports: parser.outports};
         }  
       
         var flatten = function (array, isShallow) {
@@ -2617,7 +2948,22 @@ module.exports = (function(){
         }
         
         parser.registerExports = function (priv, pub) {
+          if (!parser.exports) {
+            parser.exports = [];
+          }
           parser.exports.push({private:priv.toLowerCase(), public:pub.toLowerCase()})
+        }
+        parser.registerInports = function (node, port, pub) {
+          if (!parser.inports) {
+            parser.inports = {};
+          }
+          parser.inports[pub.toLowerCase()] = {process:node, port:port.toLowerCase()}
+        }
+        parser.registerOutports = function (node, port, pub) {
+          if (!parser.outports) {
+            parser.outports = {};
+          }
+          parser.outports[pub.toLowerCase()] = {process:node, port:port.toLowerCase()}
         }
       
         parser.registerEdges = function (edges) {
@@ -2730,7 +3076,7 @@ module.exports = (function(){
 })();
 });
 require.register("noflo-noflo/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"noflo","description":"Flow-Based Programming environment for JavaScript","keywords":["fbp","workflow","flow"],"repo":"noflo/noflo","version":"0.4.1","dependencies":{"component/emitter":"*","component/underscore":"*","noflo/fbp":"*"},"development":{},"license":"MIT","main":"src/lib/NoFlo.js","scripts":["src/lib/Graph.coffee","src/lib/InternalSocket.coffee","src/lib/BasePort.coffee","src/lib/InPort.coffee","src/lib/OutPort.coffee","src/lib/Ports.coffee","src/lib/Port.coffee","src/lib/ArrayPort.coffee","src/lib/Component.coffee","src/lib/AsyncComponent.coffee","src/lib/LoggingComponent.coffee","src/lib/ComponentLoader.coffee","src/lib/NoFlo.coffee","src/lib/Network.coffee","src/lib/Platform.coffee","src/components/Graph.coffee"],"json":["component.json"],"noflo":{"components":{"Graph":"src/components/Graph.js"}}}');
+module.exports = JSON.parse('{"name":"noflo","description":"Flow-Based Programming environment for JavaScript","keywords":["fbp","workflow","flow"],"repo":"noflo/noflo","version":"0.4.1","dependencies":{"component/emitter":"*","component/underscore":"*","noflo/fbp":"*"},"development":{},"license":"MIT","main":"src/lib/NoFlo.js","scripts":["src/lib/Graph.coffee","src/lib/InternalSocket.coffee","src/lib/BasePort.coffee","src/lib/InPort.coffee","src/lib/OutPort.coffee","src/lib/Ports.coffee","src/lib/Port.coffee","src/lib/ArrayPort.coffee","src/lib/Component.coffee","src/lib/AsyncComponent.coffee","src/lib/LoggingComponent.coffee","src/lib/ComponentLoader.coffee","src/lib/NoFlo.coffee","src/lib/Network.coffee","src/lib/Platform.coffee","src/lib/Journal.coffee","src/components/Graph.coffee"],"json":["component.json"],"noflo":{"components":{"Graph":"src/components/Graph.js"}}}');
 });
 require.register("noflo-noflo/src/lib/Graph.js", function(exports, require, module){
 var EventEmitter, Graph,
@@ -2758,6 +3104,10 @@ Graph = (function(_super) {
 
   Graph.prototype.exports = [];
 
+  Graph.prototype.inports = {};
+
+  Graph.prototype.outports = {};
+
   Graph.prototype.groups = [];
 
   function Graph(name) {
@@ -2767,81 +3117,262 @@ Graph = (function(_super) {
     this.edges = [];
     this.initializers = [];
     this.exports = [];
+    this.inports = {};
+    this.outports = {};
     this.groups = [];
+    this.transaction = {
+      id: null,
+      depth: 0
+    };
   }
 
-  Graph.prototype.addExport = function(privatePort, publicPort, metadata) {
+  Graph.prototype.startTransaction = function(id, metadata) {
+    if (this.transaction.id) {
+      throw Error("Nested transactions not supported");
+    }
+    this.transaction.id = id;
+    this.transaction.depth = 1;
+    return this.emit('startTransaction', id, metadata);
+  };
+
+  Graph.prototype.endTransaction = function(id, metadata) {
+    if (!this.transaction.id) {
+      throw Error("Attempted to end non-existing transaction");
+    }
+    this.transaction.id = null;
+    this.transaction.depth = 0;
+    return this.emit('endTransaction', id, metadata);
+  };
+
+  Graph.prototype.checkTransactionStart = function() {
+    if (!this.transaction.id) {
+      return this.startTransaction('implicit');
+    } else if (this.transaction.id === 'implicit') {
+      return this.transaction.depth += 1;
+    }
+  };
+
+  Graph.prototype.checkTransactionEnd = function() {
+    if (this.transaction.id === 'implicit') {
+      this.transaction.depth -= 1;
+    }
+    if (this.transaction.depth === 0) {
+      return this.endTransaction('implicit');
+    }
+  };
+
+  Graph.prototype.setProperties = function(properties) {
+    var item, val;
+    for (item in properties) {
+      val = properties[item];
+      this.properties[item] = val;
+    }
+    return this.emit('changeProperties', this.properties);
+  };
+
+  Graph.prototype.addExport = function(publicPort, nodeKey, portKey, metadata) {
     var exported;
+    if (metadata == null) {
+      metadata = {
+        x: 0,
+        y: 0
+      };
+    }
+    if (!this.getNode(nodeKey)) {
+      return;
+    }
+    this.checkTransactionStart();
     exported = {
-      "private": privatePort.toLowerCase(),
-      "public": publicPort.toLowerCase(),
+      "public": publicPort,
+      process: nodeKey,
+      port: portKey,
       metadata: metadata
     };
     this.exports.push(exported);
-    return this.emit('addExport', exported);
+    this.emit('addExport', exported);
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.removeExport = function(publicPort) {
-    var exported, _i, _len, _ref, _results;
+    var exported, found, idx, _i, _len, _ref;
+    publicPort = publicPort.toLowerCase();
+    found = null;
     _ref = this.exports;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      exported = _ref[_i];
-      if (!exported) {
-        continue;
+    for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+      exported = _ref[idx];
+      if (exported["public"] === publicPort) {
+        found = exported;
       }
-      if (exported["public"] !== publicPort) {
-        continue;
-      }
-      this.exports.splice(this.exports.indexOf(exported), 1);
-      _results.push(this.emit('removeExport', exported));
     }
-    return _results;
+    if (!found) {
+      return;
+    }
+    this.checkTransactionStart();
+    this.exports.splice(this.exports.indexOf(found), 1);
+    this.emit('removeExport', found);
+    return this.checkTransactionEnd();
   };
 
-  Graph.prototype.renameExport = function(oldPort, newPort) {
-    var exported, _i, _len, _ref;
-    _ref = this.exports;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      exported = _ref[_i];
-      if (!exported) {
-        continue;
-      }
-      if (exported["public"] !== oldPort) {
-        continue;
-      }
-      exported["public"] = newPort;
+  Graph.prototype.addInport = function(publicPort, nodeKey, portKey, metadata) {
+    if (!this.getNode(nodeKey)) {
+      return;
     }
-    return this.emit('renameExport', oldPort, newPort);
+    this.checkTransactionStart();
+    this.inports[publicPort] = {
+      process: nodeKey,
+      port: portKey,
+      metadata: metadata
+    };
+    this.emit('addInport', publicPort, this.inports[publicPort]);
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.removeInport = function(publicPort) {
+    var port;
+    publicPort = publicPort.toLowerCase();
+    if (!this.inports[publicPort]) {
+      return;
+    }
+    this.checkTransactionStart();
+    port = this.inports[publicPort];
+    delete this.inports[publicPort];
+    this.emit('removeInport', publicPort, port);
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.renameInport = function(oldPort, newPort) {
+    if (!this.inports[oldPort]) {
+      return;
+    }
+    this.checkTransactionStart();
+    this.inports[newPort] = this.inports[oldPort];
+    delete this.inports[oldPort];
+    this.emit('renameInport', oldPort, newPort);
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.setInportMetadata = function(publicPort, metadata) {
+    var item, val;
+    if (!this.inports[publicPort]) {
+      return;
+    }
+    this.checkTransactionStart();
+    if (!this.inports[publicPort].metadata) {
+      this.inports[publicPort].metadata = {};
+    }
+    for (item in metadata) {
+      val = metadata[item];
+      this.inports[publicPort].metadata[item] = val;
+    }
+    this.emit('changeInport', this.inports[publicPort]);
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.addOutport = function(publicPort, nodeKey, portKey, metadata) {
+    if (!this.getNode(nodeKey)) {
+      return;
+    }
+    this.checkTransactionStart();
+    this.outports[publicPort] = {
+      process: nodeKey,
+      port: portKey,
+      metadata: metadata
+    };
+    return this.emit('addOutport', publicPort, this.outports[publicPort]);
+  };
+
+  Graph.prototype.removeOutport = function(publicPort) {
+    var port;
+    publicPort = publicPort.toLowerCase();
+    if (!this.outports[publicPort]) {
+      return;
+    }
+    this.checkTransactionStart();
+    port = this.outports[publicPort];
+    delete this.outports[publicPort];
+    this.emit('removeOutport', publicPort, port);
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.renameOutport = function(oldPort, newPort) {
+    if (!this.outports[oldPort]) {
+      return;
+    }
+    this.checkTransactionStart();
+    this.outports[newPort] = this.outports[oldPort];
+    delete this.outports[oldPort];
+    this.emit('renameOutport', oldPort, newPort);
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.setOutportMetadata = function(publicPort, metadata) {
+    var item, val;
+    if (!this.outports[publicPort]) {
+      return;
+    }
+    this.checkTransactionStart();
+    if (!this.outports[publicPort].metadata) {
+      this.outports[publicPort].metadata = {};
+    }
+    for (item in metadata) {
+      val = metadata[item];
+      this.outports[publicPort].metadata[item] = val;
+    }
+    this.emit('changeOutport', this.outports[publicPort]);
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.addGroup = function(group, nodes, metadata) {
-    return this.groups.push({
+    this.checkTransactionStart();
+    this.groups.push({
       name: group,
       nodes: nodes,
       metadata: metadata
     });
+    return this.checkTransactionEnd();
   };
 
-  Graph.prototype.removeGroup = function(group) {
-    var _i, _len, _ref, _results;
+  Graph.prototype.removeGroup = function(groupName) {
+    var group, _i, _len, _ref;
+    this.checkTransactionStart();
     _ref = this.groups;
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       group = _ref[_i];
       if (!group) {
         continue;
       }
-      if (group.name !== group) {
+      if (group.name !== groupName) {
         continue;
       }
-      _results.push(this.groups.splice(this.groups.indexOf(group), 1));
+      this.groups.splice(this.groups.indexOf(group), 1);
     }
-    return _results;
+    return this.checkTransactionEnd();
+  };
+
+  Graph.prototype.setGroupMetadata = function(groupName, metadata) {
+    var group, item, val, _i, _len, _ref;
+    this.checkTransactionStart();
+    _ref = this.groups;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      group = _ref[_i];
+      if (!group) {
+        continue;
+      }
+      if (group.name !== groupName) {
+        continue;
+      }
+      for (item in metadata) {
+        val = metadata[item];
+        group.metadata[item] = val;
+      }
+      this.emit('changeGroup', group);
+    }
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.addNode = function(id, component, metadata) {
     var node;
+    this.checkTransactionStart();
     if (!metadata) {
       metadata = {};
     }
@@ -2852,11 +3383,13 @@ Graph = (function(_super) {
     };
     this.nodes.push(node);
     this.emit('addNode', node);
+    this.checkTransactionEnd();
     return node;
   };
 
   Graph.prototype.removeNode = function(id) {
-    var edge, exported, group, index, initializer, node, privateNode, privatePort, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+    var edge, exported, group, index, initializer, node, priv, pub, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+    this.checkTransactionStart();
     node = this.getNode(id);
     _ref = this.edges;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2884,17 +3417,27 @@ Graph = (function(_super) {
     _ref2 = this.exports;
     for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
       exported = _ref2[_k];
-      if (!exported) {
-        continue;
-      }
-      _ref3 = exported["private"].split('.'), privateNode = _ref3[0], privatePort = _ref3[1];
-      if (privateNode === id.toLowerCase()) {
-        this.removeExport(exported["public"]);
+      if (id.toLowerCase() === exported.process) {
+        this.removeExports(exported["public"]);
       }
     }
-    _ref4 = this.groups;
-    for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
-      group = _ref4[_l];
+    _ref3 = this.inports;
+    for (pub in _ref3) {
+      priv = _ref3[pub];
+      if (priv.process === id) {
+        this.removeInport(pub);
+      }
+    }
+    _ref4 = this.outports;
+    for (pub in _ref4) {
+      priv = _ref4[pub];
+      if (priv.process === id) {
+        this.removeOutport(pub);
+      }
+    }
+    _ref5 = this.groups;
+    for (_l = 0, _len3 = _ref5.length; _l < _len3; _l++) {
+      group = _ref5[_l];
       if (!group) {
         continue;
       }
@@ -2907,7 +3450,8 @@ Graph = (function(_super) {
     if (-1 !== this.nodes.indexOf(node)) {
       this.nodes.splice(this.nodes.indexOf(node), 1);
     }
-    return this.emit('removeNode', node);
+    this.emit('removeNode', node);
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.getNode = function(id) {
@@ -2926,7 +3470,8 @@ Graph = (function(_super) {
   };
 
   Graph.prototype.renameNode = function(oldId, newId) {
-    var edge, exported, group, iip, index, node, privateNode, privatePort, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+    var edge, exported, group, iip, index, node, priv, pub, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+    this.checkTransactionStart();
     node = this.getNode(oldId);
     if (!node) {
       return;
@@ -2955,21 +3500,30 @@ Graph = (function(_super) {
         iip.to.node = newId;
       }
     }
-    _ref2 = this.exports;
-    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-      exported = _ref2[_k];
-      if (!exported) {
-        continue;
+    _ref2 = this.inports;
+    for (pub in _ref2) {
+      priv = _ref2[pub];
+      if (priv.process === oldId) {
+        priv.process = newId;
       }
-      _ref3 = exported["private"].split('.'), privateNode = _ref3[0], privatePort = _ref3[1];
-      if (privateNode !== oldId.toLowerCase()) {
-        continue;
-      }
-      exported["private"] = "" + (newId.toLowerCase()) + "." + privatePort;
     }
-    _ref4 = this.groups;
-    for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
-      group = _ref4[_l];
+    _ref3 = this.outports;
+    for (pub in _ref3) {
+      priv = _ref3[pub];
+      if (priv.process === oldId) {
+        priv.process = newId;
+      }
+    }
+    _ref4 = this.exports;
+    for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+      exported = _ref4[_k];
+      if (exported.process === oldId) {
+        exported.process = newId;
+      }
+    }
+    _ref5 = this.groups;
+    for (_l = 0, _len3 = _ref5.length; _l < _len3; _l++) {
+      group = _ref5[_l];
       if (!group) {
         continue;
       }
@@ -2979,7 +3533,8 @@ Graph = (function(_super) {
       }
       group.nodes[index] = newId;
     }
-    return this.emit('renameNode', oldId, newId);
+    this.emit('renameNode', oldId, newId);
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.setNodeMetadata = function(id, metadata) {
@@ -2988,6 +3543,7 @@ Graph = (function(_super) {
     if (!node) {
       return;
     }
+    this.checkTransactionStart();
     if (!node.metadata) {
       node.metadata = {};
     }
@@ -2995,7 +3551,8 @@ Graph = (function(_super) {
       val = metadata[item];
       node.metadata[item] = val;
     }
-    return this.emit('changeNode', node);
+    this.emit('changeNode', node);
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.addEdge = function(outNode, outPort, inNode, inPort, metadata) {
@@ -3016,6 +3573,7 @@ Graph = (function(_super) {
     if (!metadata) {
       metadata = {};
     }
+    this.checkTransactionStart();
     edge = {
       from: {
         node: outNode,
@@ -3029,13 +3587,14 @@ Graph = (function(_super) {
     };
     this.edges.push(edge);
     this.emit('addEdge', edge);
+    this.checkTransactionEnd();
     return edge;
   };
 
   Graph.prototype.removeEdge = function(node, port, node2, port2) {
-    var edge, index, _i, _len, _ref, _results;
+    var edge, index, _i, _len, _ref;
+    this.checkTransactionStart();
     _ref = this.edges;
-    _results = [];
     for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
       edge = _ref[index];
       if (!edge) {
@@ -3057,12 +3616,10 @@ Graph = (function(_super) {
           }
         }
         this.emit('removeEdge', edge);
-        _results.push(this.edges.splice(index, 1));
-      } else {
-        _results.push(void 0);
+        this.edges.splice(index, 1);
       }
     }
-    return _results;
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.getEdge = function(node, port, node2, port2) {
@@ -3088,6 +3645,7 @@ Graph = (function(_super) {
     if (!edge) {
       return;
     }
+    this.checkTransactionStart();
     if (!edge.metadata) {
       edge.metadata = {};
     }
@@ -3095,7 +3653,8 @@ Graph = (function(_super) {
       val = metadata[item];
       edge.metadata[item] = val;
     }
-    return this.emit('changeEdge', edge);
+    this.emit('changeEdge', edge);
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.addInitial = function(data, node, port, metadata) {
@@ -3103,6 +3662,7 @@ Graph = (function(_super) {
     if (!this.getNode(node)) {
       return;
     }
+    this.checkTransactionStart();
     initializer = {
       from: {
         data: data
@@ -3115,13 +3675,14 @@ Graph = (function(_super) {
     };
     this.initializers.push(initializer);
     this.emit('addInitial', initializer);
+    this.checkTransactionEnd();
     return initializer;
   };
 
   Graph.prototype.removeInitial = function(node, port) {
-    var edge, index, _i, _len, _ref, _results;
+    var edge, index, _i, _len, _ref;
+    this.checkTransactionStart();
     _ref = this.initializers;
-    _results = [];
     for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
       edge = _ref[index];
       if (!edge) {
@@ -3129,12 +3690,10 @@ Graph = (function(_super) {
       }
       if (edge.to.node === node && edge.to.port === port) {
         this.emit('removeInitial', edge);
-        _results.push(this.initializers.splice(index, 1));
-      } else {
-        _results.push(void 0);
+        this.initializers.splice(index, 1);
       }
     }
-    return _results;
+    return this.checkTransactionEnd();
   };
 
   Graph.prototype.toDOT = function() {
@@ -3188,10 +3747,11 @@ Graph = (function(_super) {
   };
 
   Graph.prototype.toJSON = function() {
-    var connection, edge, exported, exportedData, group, groupData, initializer, json, node, property, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+    var connection, edge, exported, group, groupData, initializer, json, node, priv, property, pub, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
     json = {
       properties: {},
-      exports: [],
+      inports: {},
+      outports: {},
       groups: [],
       processes: {},
       connections: []
@@ -3204,21 +3764,27 @@ Graph = (function(_super) {
       value = _ref[property];
       json.properties[property] = value;
     }
-    _ref1 = this.exports;
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      exported = _ref1[_i];
-      exportedData = {
-        "public": exported["public"],
-        "private": exported["private"]
-      };
-      if (exported.metadata) {
-        exportedData.metadata = exported.metadata;
-      }
-      json.exports.push(exportedData);
+    _ref1 = this.inports;
+    for (pub in _ref1) {
+      priv = _ref1[pub];
+      json.inports[pub] = priv;
     }
-    _ref2 = this.groups;
-    for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-      group = _ref2[_j];
+    _ref2 = this.outports;
+    for (pub in _ref2) {
+      priv = _ref2[pub];
+      json.outports[pub] = priv;
+    }
+    _ref3 = this.exports;
+    for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+      exported = _ref3[_i];
+      if (!json.exports) {
+        json.exports = [];
+      }
+      json.exports.push(exported);
+    }
+    _ref4 = this.groups;
+    for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+      group = _ref4[_j];
       groupData = {
         name: group.name,
         nodes: group.nodes
@@ -3228,9 +3794,9 @@ Graph = (function(_super) {
       }
       json.groups.push(groupData);
     }
-    _ref3 = this.nodes;
-    for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-      node = _ref3[_k];
+    _ref5 = this.nodes;
+    for (_k = 0, _len2 = _ref5.length; _k < _len2; _k++) {
+      node = _ref5[_k];
       json.processes[node.id] = {
         component: node.component
       };
@@ -3238,9 +3804,9 @@ Graph = (function(_super) {
         json.processes[node.id].metadata = node.metadata;
       }
     }
-    _ref4 = this.edges;
-    for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
-      edge = _ref4[_l];
+    _ref6 = this.edges;
+    for (_l = 0, _len3 = _ref6.length; _l < _len3; _l++) {
+      edge = _ref6[_l];
       connection = {
         src: {
           process: edge.from.node,
@@ -3256,9 +3822,9 @@ Graph = (function(_super) {
       }
       json.connections.push(connection);
     }
-    _ref5 = this.initializers;
-    for (_m = 0, _len4 = _ref5.length; _m < _len4; _m++) {
-      initializer = _ref5[_m];
+    _ref7 = this.initializers;
+    for (_m = 0, _len4 = _ref7.length; _m < _len4; _m++) {
+      initializer = _ref7[_m];
       json.connections.push({
         data: initializer.from.data,
         tgt: {
@@ -3291,8 +3857,11 @@ exports.createGraph = function(name) {
   return new Graph(name);
 };
 
-exports.loadJSON = function(definition, success) {
-  var conn, def, exported, graph, group, id, metadata, property, value, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+exports.loadJSON = function(definition, success, metadata) {
+  var conn, def, exported, graph, group, id, portId, priv, processId, property, pub, split, value, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+  if (metadata == null) {
+    metadata = {};
+  }
   if (!definition.properties) {
     definition.properties = {};
   }
@@ -3303,6 +3872,7 @@ exports.loadJSON = function(definition, success) {
     definition.connections = [];
   }
   graph = new Graph(definition.properties.name);
+  graph.startTransaction('loadJSON', metadata);
   _ref = definition.properties;
   for (property in _ref) {
     value = _ref[property];
@@ -3329,20 +3899,46 @@ exports.loadJSON = function(definition, success) {
     metadata = conn.metadata ? conn.metadata : {};
     graph.addEdge(conn.src.process, conn.src.port.toLowerCase(), conn.tgt.process, conn.tgt.port.toLowerCase(), metadata);
   }
-  if (definition.exports) {
+  if (definition.exports && definition.exports.length) {
     _ref3 = definition.exports;
     for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
       exported = _ref3[_j];
-      graph.addExport(exported["private"], exported["public"], exported.metadata);
+      split = exported["private"].split('.');
+      if (split.length !== 2) {
+        continue;
+      }
+      processId = split[0];
+      portId = split[1];
+      for (id in definition.processes) {
+        if (id.toLowerCase() === processId.toLowerCase()) {
+          processId = id;
+        }
+      }
+      graph.addExport(exported["public"], processId, portId, exported.metadata);
+    }
+  }
+  if (definition.inports) {
+    _ref4 = definition.inports;
+    for (pub in _ref4) {
+      priv = _ref4[pub];
+      graph.addInport(pub, priv.process, priv.port, priv.metadata);
+    }
+  }
+  if (definition.outports) {
+    _ref5 = definition.outports;
+    for (pub in _ref5) {
+      priv = _ref5[pub];
+      graph.addOutport(pub, priv.process, priv.port, priv.metadata);
     }
   }
   if (definition.groups) {
-    _ref4 = definition.groups;
-    for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
-      group = _ref4[_k];
+    _ref6 = definition.groups;
+    for (_k = 0, _len2 = _ref6.length; _k < _len2; _k++) {
+      group = _ref6[_k];
       graph.addGroup(group.name, group.nodes, group.metadata);
     }
   }
+  graph.endTransaction('loadJSON');
   return success(graph);
 };
 
@@ -3368,12 +3964,15 @@ exports.loadHTTP = function(url, success) {
   return req.send();
 };
 
-exports.loadFile = function(file, success) {
+exports.loadFile = function(file, success, metadata) {
   var definition, e;
+  if (metadata == null) {
+    metadata = {};
+  }
   if (!(typeof process !== 'undefined' && process.execPath && process.execPath.indexOf('node') !== -1)) {
     try {
       definition = require(file);
-      exports.loadJSON(definition, success);
+      exports.loadJSON(definition, success, metadata);
       return;
     } catch (_error) {
       e = _error;
@@ -5532,6 +6131,300 @@ exports.isBrowser = function() {
 };
 
 });
+require.register("noflo-noflo/src/lib/Journal.js", function(exports, require, module){
+var EventEmitter, Journal, entryToPrettyString,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+if (typeof process !== 'undefined' && process.execPath && process.execPath.indexOf('node') !== -1) {
+  EventEmitter = require('events').EventEmitter;
+} else {
+  EventEmitter = require('emitter');
+}
+
+entryToPrettyString = function(entry) {
+  var a;
+  a = entry.args;
+  switch (entry.cmd) {
+    case 'addNode':
+      return "" + a.id + "(" + a.component + ")";
+    case 'removeNode':
+      return "DEL " + a.id + "(" + a.component + ")";
+    case 'renameNode':
+      return "RENAME " + a.oldId + " " + a.newId;
+    case 'addEdge':
+      return "" + a.from.node + " " + a.from.port + " -> " + a.to.port + " " + a.to.node;
+    case 'removeEdge':
+      return "" + a.from.node + " " + a.from.port + " -X> " + a.to.port + " " + a.to.node;
+    case 'addInitial':
+      return "'" + a.from.data + "' -> " + a.to.port + " " + a.to.node;
+    case 'removeInitial':
+      return "'" + a.from.data + "' -X> " + a.to.port + " " + a.to.node;
+    case 'startTransaction':
+      return ">>> " + entry.rev + ": " + a.id;
+    case 'endTransaction':
+      return "<<< " + entry.rev + ": " + a.id;
+    default:
+      throw new Error("Unknown journal entry: " + entry.cmd);
+  }
+};
+
+Journal = (function(_super) {
+  __extends(Journal, _super);
+
+  Journal.prototype.graph = null;
+
+  Journal.prototype.entries = [];
+
+  Journal.prototype.subscribed = true;
+
+  function Journal(graph) {
+    var edge, ipp, node, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+    this.graph = graph;
+    this.entries = [];
+    this.subscribed = true;
+    this.lastRevision = 0;
+    this.currentRevision = this.lastRevision;
+    this.appendCommand('startTransaction', {
+      id: 'initial',
+      metadata: null
+    });
+    _ref = this.graph.nodes;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      node = _ref[_i];
+      this.appendCommand('addNode', node);
+    }
+    _ref1 = this.graph.edges;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      edge = _ref1[_j];
+      this.appendCommand('addEdge', edge);
+    }
+    _ref2 = this.graph.initializers;
+    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+      ipp = _ref2[_k];
+      this.appendCommand('addIntitial', iip);
+    }
+    this.appendCommand('endTransaction', {
+      id: 'initial',
+      metadata: null
+    });
+    this.graph.on('addNode', (function(_this) {
+      return function(node) {
+        return _this.appendCommand('addNode', node);
+      };
+    })(this));
+    this.graph.on('removeNode', (function(_this) {
+      return function(node) {
+        return _this.appendCommand('removeNode', node);
+      };
+    })(this));
+    this.graph.on('renameNode', (function(_this) {
+      return function(oldId, newId) {
+        var args;
+        args = {
+          oldId: oldId,
+          newId: newId
+        };
+        return _this.appendCommand('renameNode', args);
+      };
+    })(this));
+    this.graph.on('addEdge', (function(_this) {
+      return function(edge) {
+        return _this.appendCommand('addEdge', edge);
+      };
+    })(this));
+    this.graph.on('removeEdge', (function(_this) {
+      return function(edge) {
+        return _this.appendCommand('removeEdge', edge);
+      };
+    })(this));
+    this.graph.on('addInitial', (function(_this) {
+      return function(iip) {
+        return _this.appendCommand('addInitial', iip);
+      };
+    })(this));
+    this.graph.on('removeInitial', (function(_this) {
+      return function(iip) {
+        return _this.appendCommand('removeInitial', iip);
+      };
+    })(this));
+    this.graph.on('startTransaction', (function(_this) {
+      return function(id, meta) {
+        if (!_this.subscribed) {
+          return;
+        }
+        _this.lastRevision++;
+        _this.currentRevision = _this.lastRevision;
+        return _this.appendCommand('startTransaction', {
+          id: id,
+          metadata: meta
+        });
+      };
+    })(this));
+    this.graph.on('endTransaction', (function(_this) {
+      return function(id, meta) {
+        return _this.appendCommand('endTransaction', {
+          id: id,
+          metadata: meta
+        });
+      };
+    })(this));
+  }
+
+  Journal.prototype.appendCommand = function(cmd, args) {
+    var entry;
+    if (!this.subscribed) {
+      return;
+    }
+    entry = {
+      cmd: cmd,
+      args: args,
+      rev: this.lastRevision
+    };
+    return this.entries.push(entry);
+  };
+
+  Journal.prototype.executeEntry = function(entry) {
+    var a;
+    a = entry.args;
+    switch (entry.cmd) {
+      case 'addNode':
+        return this.graph.addNode(a.id, a.component);
+      case 'removeNode':
+        return this.graph.removeNode(a.id);
+      case 'renameNode':
+        return this.graph.renameNode(a.oldId, a.newId);
+      case 'addEdge':
+        return this.graph.addEdge(a.from.node, a.from.port, a.to.node, a.to.port);
+      case 'removeEdge':
+        return this.graph.removeEdge(a.from.node, a.from.port, a.to.node, a.to.port);
+      case 'addInitial':
+        return this.graph.addInitial(a.from.data, a.to.node, a.to.port);
+      case 'removeInitial':
+        return this.graph.removeInitial(a.to.node, a.to.port);
+      case 'startTransaction':
+        return null;
+      case 'endTransaction':
+        return null;
+      default:
+        throw new Error("Unknown journal entry: " + entry.cmd);
+    }
+  };
+
+  Journal.prototype.executeEntryInversed = function(entry) {
+    var a;
+    a = entry.args;
+    switch (entry.cmd) {
+      case 'addNode':
+        return this.graph.removeNode(a.id);
+      case 'removeNode':
+        return this.graph.addNode(a.id, a.component);
+      case 'renameNode':
+        return this.graph.renameNode(a.newId, a.oldId);
+      case 'addEdge':
+        return this.graph.removeEdge(a.from.node, a.from.port, a.to.node, a.to.port);
+      case 'removeEdge':
+        return this.graph.addEdge(a.from.node, a.from.port, a.to.node, a.to.port);
+      case 'addInitial':
+        return this.graph.removeInitial(a.to.node, a.to.port);
+      case 'removeInitial':
+        return this.graph.addInitial(a.from.data, a.to.node, a.to.port);
+      case 'startTransaction':
+        return null;
+      case 'endTransaction':
+        return null;
+      default:
+        throw new Error("Unknown journal entry: " + entry.cmd);
+    }
+  };
+
+  Journal.prototype.moveToRevision = function(revId) {
+    var entry, i, _i, _len, _ref;
+    if (revId === this.currentRevision) {
+      return;
+    }
+    this.subscribed = false;
+    if (revId > this.currentRevision) {
+      _ref = this.entries;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        if (entry.rev <= this.currentRevision) {
+          continue;
+        }
+        if (entry.rev > revId) {
+          break;
+        }
+        this.executeEntry(entry);
+      }
+    } else {
+      i = this.entries.length;
+      while (i > 0) {
+        i--;
+        entry = this.entries[i];
+        if (entry.rev > this.currentRevision) {
+          continue;
+        }
+        if (entry.rev === revId) {
+          break;
+        }
+        this.executeEntryInversed(entry);
+      }
+    }
+    this.currentRevision = revId;
+    return this.subscribed = true;
+  };
+
+  Journal.prototype.undo = function() {
+    if (!(this.currentRevision > 0)) {
+      return;
+    }
+    return this.moveToRevision(this.currentRevision - 1);
+  };
+
+  Journal.prototype.redo = function() {
+    if (!(this.currentRevision < this.lastRevision)) {
+      return;
+    }
+    return this.moveToRevision(this.currentRevision + 1);
+  };
+
+  Journal.prototype.toPrettyString = function() {
+    var entry, lines;
+    lines = (function() {
+      var _i, _len, _ref, _results;
+      _ref = this.entries;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        _results.push(entryToPrettyString(entry));
+      }
+      return _results;
+    }).call(this);
+    return lines.join('\n');
+  };
+
+  Journal.prototype.toJSON = function() {
+    return this.entries;
+  };
+
+  Journal.prototype.save = function(file, success) {
+    var json;
+    json = JSON.stringify(this.toJSON(), null, 4);
+    return require('fs').writeFile("" + file + ".json", json, "utf-8", function(err, data) {
+      if (err) {
+        throw err;
+      }
+      return success(file);
+    });
+  };
+
+  return Journal;
+
+})(EventEmitter);
+
+exports.Journal = Journal;
+
+});
 require.register("noflo-noflo/src/components/Graph.js", function(exports, require, module){
 var Graph, noflo,
   __hasProp = {}.hasOwnProperty,
@@ -5667,27 +6560,60 @@ Graph = (function(_super) {
     return true;
   };
 
-  Graph.prototype.portName = function(nodeName, portName) {
-    return "" + (nodeName.toLowerCase()) + "." + portName;
-  };
-
-  Graph.prototype.isExported = function(port, nodeName, portName) {
-    var exported, newPort, _i, _len, _ref;
-    newPort = this.portName(nodeName, portName);
-    _ref = this.network.graph.exports;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      exported = _ref[_i];
-      if (exported["private"] === newPort) {
-        return exported["public"];
+  Graph.prototype.isExportedInport = function(port, nodeName, portName) {
+    var exported, priv, pub, _i, _len, _ref, _ref1;
+    _ref = this.network.graph.inports;
+    for (pub in _ref) {
+      priv = _ref[pub];
+      if (!(priv.process === nodeName && priv.port === portName)) {
+        continue;
       }
+      return pub;
     }
-    if (this.network.graph.exports.length) {
-      return false;
+    _ref1 = this.network.graph.exports;
+    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      exported = _ref1[_i];
+      if (!(exported.process === nodeName && exported.port === portName)) {
+        continue;
+      }
+      this.network.graph.checkTransactionStart();
+      this.network.graph.removeExport(exported["public"]);
+      this.network.graph.addInport(exported["public"], exported.process, exported.port, exported.metadata);
+      this.network.graph.checkTransactionEnd();
+      return exported["public"];
     }
     if (port.isAttached()) {
       return false;
     }
-    return newPort;
+    return (nodeName + '.' + portName).toLowerCase();
+  };
+
+  Graph.prototype.isExportedOutport = function(port, nodeName, portName) {
+    var exported, priv, pub, _i, _len, _ref, _ref1;
+    _ref = this.network.graph.outports;
+    for (pub in _ref) {
+      priv = _ref[pub];
+      if (!(priv.process === nodeName && priv.port === portName)) {
+        continue;
+      }
+      return pub;
+    }
+    _ref1 = this.network.graph.exports;
+    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      exported = _ref1[_i];
+      if (!(exported.process === nodeName && exported.port === portName)) {
+        continue;
+      }
+      this.network.graph.checkTransactionStart();
+      this.network.graph.removeExport(exported["public"]);
+      this.network.graph.addOutport(exported["public"], exported.process, exported.port, exported.metadata);
+      this.network.graph.checkTransactionEnd();
+      return exported["public"];
+    }
+    if (port.isAttached()) {
+      return false;
+    }
+    return (nodeName + '.' + portName).toLowerCase();
   };
 
   Graph.prototype.setToReady = function() {
@@ -5716,7 +6642,7 @@ Graph = (function(_super) {
       if (!port || typeof port === 'function' || !port.canAttach) {
         continue;
       }
-      targetPortName = this.isExported(port, name, portName);
+      targetPortName = this.isExportedInport(port, name, portName);
       if (targetPortName === false) {
         continue;
       }
@@ -5728,7 +6654,7 @@ Graph = (function(_super) {
       if (!port || typeof port === 'function' || !port.canAttach) {
         continue;
       }
-      targetPortName = this.isExported(port, name, portName);
+      targetPortName = this.isExportedOutport(port, name, portName);
       if (targetPortName === false) {
         continue;
       }
@@ -9398,7 +10324,7 @@ GetObjectKey = (function(_super) {
     })(this));
     this.inPorts.sendgroup.on('data', (function(_this) {
       return function(data) {
-        return _this.sendGroup = String(keep) === 'true';
+        return _this.sendGroup = String(data) === 'true';
       };
     })(this));
   }
@@ -13665,24 +14591,29 @@ UpgradeRouter = (function(_super) {
 
   UpgradeRouter.prototype.route = function(upgrade) {
     var group, migration, upgraded, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
-    migration = upgrade.oldVersion;
     upgraded = false;
+    migration = 0;
     while (migration < upgrade.newVersion) {
+      if (migration < upgrade.oldVersion) {
+        migration++;
+        continue;
+      }
       if (!this.outPorts.versions.isAttached(migration)) {
+        migration++;
         continue;
       }
       _ref = this.groups;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         group = _ref[_i];
-        this.outPorts.versions.beginGroup(group);
+        this.outPorts.versions.beginGroup(group, migration);
       }
-      this.outPorts.versions.send(upgrade.db);
+      this.outPorts.versions.send(upgrade.db, migration);
       _ref1 = this.groups;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         group = _ref1[_j];
-        this.outPorts.versions.endGroup();
+        this.outPorts.versions.endGroup(migration);
       }
-      this.outPorts.versions.disconnect();
+      this.outPorts.versions.disconnect(migration);
       upgraded = true;
       migration++;
     }
@@ -16338,11 +17269,162 @@ exports.getComponent = function() {
 };
 
 });
+require.register("the-grid-flowhub-registry/index.js", function(exports, require, module){
+var superagent = require('superagent');
+var defaults = {
+  host: 'https://flowhub-api.herokuapp.com'
+};
+
+exports.Runtime = function (runtime, options) {
+  if (typeof runtime !== 'object') {
+    throw new Error('Runtime options expected');
+  }
+  if (!runtime.id) {
+    throw new Error('Runtime requires an UUID');
+  }
+
+  this.runtime = runtime;
+  this.options = {};
+  Object.keys(defaults).forEach(function (name) {
+    this.options[name] = defaults[name];
+  }.bind(this));
+
+  if (options) {
+    Object.keys(options).forEach(function (name) {
+      this.options[name] = options[name];
+    }.bind(this));
+  }
+};
+
+exports.Runtime.prototype.register = function (callback) {
+  if (!this.runtime.user) {
+    throw new Error('Runtime registration requires a user UUID');
+  }
+  if (!this.runtime.address) {
+    throw new Error('Runtime registration requires an address URL');
+  }
+  if (!this.runtime.protocol) {
+    throw new Error('Runtime registration requires a protocol');
+  }
+  if (!this.runtime.type) {
+    throw new Error('Runtime registration requires a type');
+  }
+  superagent.put(this.options.host + '/runtimes/' + this.runtime.id)
+  .send(this.runtime)
+  .end(callback);
+};
+
+exports.Runtime.prototype.ping = function (callback) {
+  superagent.post(this.options.host + '/runtimes/' + this.runtime.id)
+  .send({})
+  .end(function (err, res) {
+    if (callback) {
+      callback(err);
+    }
+  });
+};
+
+exports.Runtime.prototype.get = function (token, callback) {
+  if (!token) {
+    throw new Error('API token required for fetching');
+  }
+  superagent.get(this.options.host + '/runtimes/' + this.runtime.id)
+  .set('Authorization', 'Bearer ' + token)
+  .end(function (err, res) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    Object.keys(res.body).forEach(function (name) {
+      if (name == 'seen' || name == 'registered') {
+        this.runtime[name] = new Date(res.body[name]);
+        return;
+      }
+      this.runtime[name] = res.body[name];
+    }.bind(this));
+    callback(null, this.runtime);
+  }.bind(this));
+};
+
+
+exports.Runtime.prototype.del = function (token, callback) {
+  if (!token) {
+    throw new Error('API token required for deletion');
+  }
+  superagent.del(this.options.host + '/runtimes/' + this.runtime.id)
+  .set('Authorization', 'Bearer ' + token)
+  .end(callback);
+};
+
+exports.list = function (token, options, callback) {
+  if (!token) {
+    throw new Error('API token required for fetching');
+  }
+  if (!callback) {
+    callback = options;
+    options = {};
+  }
+
+  Object.keys(defaults).forEach(function (name) {
+    if (options[name]) {
+      return;
+    }
+    options[name] = defaults[name];
+  }.bind(this));
+
+  superagent.get(options.host + '/runtimes/')
+  .set('Authorization', 'Bearer ' + token)
+  .end(function (err, res) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    var results = [];
+    res.body.forEach(function (result) {
+      result.registered = new Date(result.registered);
+      result.seen = new Date(result.seen);
+      results.push(new exports.Runtime(result, options));
+    });
+    callback(null, results);
+  });
+};
+
+});
+require.register("gjohnson-uuid/index.js", function(exports, require, module){
+
+/**
+ * Taken straight from jed's gist: https://gist.github.com/982883
+ *
+ * Returns a random v4 UUID of the form xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
+ * where each x is replaced with a random hexadecimal digit from 0 to f, and
+ * y is replaced with a random hexadecimal digit from 8 to b.
+ */
+
+module.exports = function uuid(a){
+  return a           // if the placeholder was passed, return
+    ? (              // a random number from 0 to 15
+      a ^            // unless b is 8,
+      Math.random()  // in which case
+      * 16           // a random number from
+      >> a/4         // 8 to 11
+      ).toString(16) // in hexadecimal
+    : (              // or otherwise a concatenated string:
+      [1e7] +        // 10000000 +
+      -1e3 +         // -1000 +
+      -4e3 +         // -4000 +
+      -8e3 +         // -80000000 +
+      -1e11          // -100000000000,
+      ).replace(     // replacing
+        /[018]/g,    // zeroes, ones, and eights with
+        uuid         // random hex digits
+      )
+};
+});
 require.register("noflo-ui/index.js", function(exports, require, module){
 
 });
 require.register("noflo-ui/component.json", function(exports, require, module){
-module.exports = JSON.parse('{"name":"noflo-ui","description":"NoFlo Development Environment","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"noflo/noflo-ui","version":"0.1.0","keywords":["fbp","noflo","graph","visual","dataflow"],"dependencies":{"component/emitter":"*","noflo/noflo":"*","noflo/noflo-strings":"*","noflo/noflo-ajax":"*","noflo/noflo-localstorage":"*","noflo/noflo-interaction":"*","noflo/noflo-objects":"*","noflo/noflo-groups":"*","noflo/noflo-dom":"*","noflo/noflo-core":"*","noflo/noflo-polymer":"*","noflo/noflo-indexeddb":"*","noflo/noflo-github":"*"},"noflo":{"components":{"ConnectRuntime":"components/ConnectRuntime.coffee","DropExamples":"components/DropExamples.coffee","CreateGraph":"components/CreateGraph.coffee","GenerateId":"components/GenerateId.coffee","IgnoreExamples":"components/IgnoreExamples.coffee","Router":"components/Router.coffee","MigrateLocalStorage":"components/MigrateLocalStorage.coffee","MakePath":"components/MakePath.coffee"}},"main":"index.js","scripts":["index.js","src/runtimes/base.coffee","src/runtimes/iframe.coffee","src/runtimes/websocket.coffee","components/ConnectRuntime.coffee","components/DropExamples.coffee","components/CreateGraph.coffee","components/GenerateId.coffee","components/IgnoreExamples.coffee","components/Router.coffee","components/MigrateLocalStorage.coffee","components/MakePath.coffee"],"json":["component.json"],"files":["css/noflo-ui.css","preview/iframe.html","preview/package.json","preview/component.json","index.html","favicon.ico","app/noflo-200.png","examples.json"]}');
+module.exports = JSON.parse('{"name":"noflo-ui","description":"NoFlo Development Environment","author":"Henri Bergius <henri.bergius@iki.fi>","repo":"noflo/noflo-ui","version":"0.1.0","keywords":["fbp","noflo","graph","visual","dataflow"],"dependencies":{"component/emitter":"*","noflo/noflo":"*","noflo/noflo-strings":"*","noflo/noflo-ajax":"*","noflo/noflo-localstorage":"*","noflo/noflo-interaction":"*","noflo/noflo-objects":"*","noflo/noflo-groups":"*","noflo/noflo-dom":"*","noflo/noflo-core":"*","noflo/noflo-polymer":"*","noflo/noflo-indexeddb":"*","noflo/noflo-github":"*","the-grid/flowhub-registry":"*","gjohnson/uuid":"*"},"noflo":{"components":{"ConnectRuntime":"components/ConnectRuntime.coffee","DropExamples":"components/DropExamples.coffee","CreateGraph":"components/CreateGraph.coffee","GenerateId":"components/GenerateId.coffee","IgnoreExamples":"components/IgnoreExamples.coffee","Router":"components/Router.coffee","MigrateLocalStorage":"components/MigrateLocalStorage.coffee","MakePath":"components/MakePath.coffee"}},"main":"index.js","scripts":["index.js","src/runtimes/base.coffee","src/runtimes/iframe.coffee","src/runtimes/websocket.coffee","components/ConnectRuntime.coffee","components/DropExamples.coffee","components/CreateGraph.coffee","components/GenerateId.coffee","components/IgnoreExamples.coffee","components/Router.coffee","components/MigrateLocalStorage.coffee","components/MakePath.coffee"],"json":["component.json"],"files":["css/noflo-ui.css","preview/iframe.html","preview/package.json","preview/component.json","index.html","favicon.ico","app/noflo-200.png","examples.json"]}');
 });
 require.register("noflo-ui/src/runtimes/base.js", function(exports, require, module){
 var BaseRuntime, EventEmitter,
@@ -16839,7 +17921,7 @@ ConnectRuntime = (function(_super) {
   };
 
   ConnectRuntime.prototype.sendGraph = function(runtime, graph) {
-    var definition, edge, name, _i, _len, _ref, _ref1, _results;
+    var definition, edge, name, priv, pub, _i, _len, _ref, _ref1, _ref2, _ref3, _results;
     runtime.sendGraph('clear', {
       id: graph.id,
       name: graph.name,
@@ -16857,7 +17939,6 @@ ConnectRuntime = (function(_super) {
       });
     }
     _ref1 = graph.connections;
-    _results = [];
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
       edge = _ref1[_i];
       if (edge.src) {
@@ -16874,7 +17955,7 @@ ConnectRuntime = (function(_super) {
         });
         continue;
       }
-      _results.push(runtime.sendGraph('addinitial', {
+      runtime.sendGraph('addinitial', {
         src: {
           data: edge.data
         },
@@ -16883,9 +17964,34 @@ ConnectRuntime = (function(_super) {
           port: edge.tgt.port
         },
         graph: graph.id
-      }));
+      });
     }
-    return _results;
+    if (graph.inports) {
+      _ref2 = graph.inports;
+      for (pub in _ref2) {
+        priv = _ref2[pub];
+        runtime.sendGraph('addinport', {
+          "public": pub,
+          node: priv.process,
+          port: priv.port,
+          graph: graph.id
+        });
+      }
+    }
+    if (graph.outports) {
+      _ref3 = graph.outports;
+      _results = [];
+      for (pub in _ref3) {
+        priv = _ref3[pub];
+        _results.push(runtime.sendGraph('addoutport', {
+          "public": pub,
+          node: priv.process,
+          port: priv.port,
+          graph: graph.id
+        }));
+      }
+      return _results;
+    }
   };
 
   ConnectRuntime.prototype.convertNode = function(id, node) {
@@ -17327,7 +18433,6 @@ Router = (function(_super) {
             _this.outPorts.main.send(true);
             _this.outPorts.main.disconnect();
             break;
-          case 'sketch':
           case 'graph':
             if (matched.project && _this.outPorts.project.isAttached()) {
               _this.outPorts.project.send(matched.project);
@@ -17383,11 +18488,6 @@ Router = (function(_super) {
       }
       routeData.route = 'graph';
       routeData.graphs = parts;
-      return routeData;
-    }
-    if (url.substr(0, 6) === 'graph/') {
-      routeData.route = 'sketch';
-      routeData.graphs = [url.substr(6)];
       return routeData;
     }
     if (url.substr(0, 8) === 'example/') {
@@ -17541,6 +18641,8 @@ exports.getComponent = function() {
 
 
 
+
+
 require.alias("component-emitter/index.js", "noflo-ui/deps/emitter/index.js");
 require.alias("component-emitter/index.js", "emitter/index.js");
 
@@ -17560,6 +18662,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-ui/deps/noflo/src
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-ui/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-ui/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-ui/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-ui/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-ui/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-ui/deps/noflo/index.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo/index.js");
@@ -17598,6 +18701,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-strings/dep
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-strings/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-strings/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-strings/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-strings/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-strings/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-strings/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17631,6 +18735,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-ajax/deps/n
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-ajax/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-ajax/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-ajax/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-ajax/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-ajax/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-ajax/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17667,6 +18772,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-localstorag
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-localstorage/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-localstorage/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-localstorage/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-localstorage/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-localstorage/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-localstorage/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17708,6 +18814,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-interaction
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-interaction/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-interaction/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-interaction/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-interaction/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-interaction/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-interaction/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17763,6 +18870,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-objects/dep
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-objects/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-objects/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-objects/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-objects/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-objects/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-objects/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17811,6 +18919,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-groups/deps
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-groups/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-groups/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-groups/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-groups/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-groups/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-groups/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17853,6 +18962,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-dom/deps/no
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-dom/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-dom/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-dom/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-dom/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-dom/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-dom/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17895,6 +19005,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-core/deps/n
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-core/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-core/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-core/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-core/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-core/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-core/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17928,6 +19039,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-polymer/dep
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-polymer/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-polymer/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-polymer/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-polymer/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-polymer/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-polymer/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -17975,6 +19087,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-indexeddb/d
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-indexeddb/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-indexeddb/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-indexeddb/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-indexeddb/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-indexeddb/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-indexeddb/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -18012,6 +19125,7 @@ require.alias("noflo-noflo/src/lib/ComponentLoader.js", "noflo-noflo-github/deps
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-github/deps/noflo/src/lib/NoFlo.js");
 require.alias("noflo-noflo/src/lib/Network.js", "noflo-noflo-github/deps/noflo/src/lib/Network.js");
 require.alias("noflo-noflo/src/lib/Platform.js", "noflo-noflo-github/deps/noflo/src/lib/Platform.js");
+require.alias("noflo-noflo/src/lib/Journal.js", "noflo-noflo-github/deps/noflo/src/lib/Journal.js");
 require.alias("noflo-noflo/src/components/Graph.js", "noflo-noflo-github/deps/noflo/src/components/Graph.js");
 require.alias("noflo-noflo/src/lib/NoFlo.js", "noflo-noflo-github/deps/noflo/index.js");
 require.alias("component-emitter/index.js", "noflo-noflo/deps/emitter/index.js");
@@ -18032,4 +19146,16 @@ require.alias("component-reduce/index.js", "visionmedia-superagent/deps/reduce/i
 
 require.alias("visionmedia-superagent/lib/client.js", "visionmedia-superagent/index.js");
 require.alias("bergie-octo/octo.js", "bergie-octo/index.js");
+require.alias("the-grid-flowhub-registry/index.js", "noflo-ui/deps/flowhub-registry/index.js");
+require.alias("the-grid-flowhub-registry/index.js", "flowhub-registry/index.js");
+require.alias("visionmedia-superagent/lib/client.js", "the-grid-flowhub-registry/deps/superagent/lib/client.js");
+require.alias("visionmedia-superagent/lib/client.js", "the-grid-flowhub-registry/deps/superagent/index.js");
+require.alias("component-emitter/index.js", "visionmedia-superagent/deps/emitter/index.js");
+
+require.alias("component-reduce/index.js", "visionmedia-superagent/deps/reduce/index.js");
+
+require.alias("visionmedia-superagent/lib/client.js", "visionmedia-superagent/index.js");
+require.alias("gjohnson-uuid/index.js", "noflo-ui/deps/uuid/index.js");
+require.alias("gjohnson-uuid/index.js", "uuid/index.js");
+
 require.alias("noflo-ui/index.js", "noflo-ui/index.js");

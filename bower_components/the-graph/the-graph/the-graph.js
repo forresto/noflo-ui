@@ -35,8 +35,8 @@
       var tooltipEvent = new CustomEvent('the-graph-tooltip', { 
         detail: {
           tooltip: this.props.label,
-          x: event.pageX,
-          y: event.pageY
+          x: event.clientX,
+          y: event.clientY
         }, 
         bubbles: true
       });
@@ -73,16 +73,20 @@
     pointerX: 0,
     pointerY: 0,
     savePointerPosition: function (event) {
-      this.pointerX = event.pageX;
-      this.pointerY = event.pageY;
+      this.pointerX = event.clientX;
+      this.pointerY = event.clientY;
     },
   };  
 
   TheGraph.findMinMax = function (graph, nodes) {
+    var inports, outports;
     if (nodes === undefined) {
       nodes = graph.nodes.map( function (node) {
         return node.id;
       });
+      // Only look at exports when calculating the whole graph
+      inports = graph.inports;
+      outports = graph.outports;
     }
     if (nodes.length < 1) {
       return undefined;
@@ -92,19 +96,46 @@
     var maxX = -Infinity;
     var maxY = -Infinity;
 
+    // Loop through nodes
     var len = nodes.length;
     for (var i=0; i<len; i++) {
       var key = nodes[i];
       var node = graph.getNode(key);
-      if (!node) {
+      if (!node || !node.metadata) {
         continue;
-        // throw new Error("Didn't find node "+key);
       }
       if (node.metadata.x < minX) { minX = node.metadata.x; }
       if (node.metadata.y < minY) { minY = node.metadata.y; }
       if (node.metadata.x > maxX) { maxX = node.metadata.x; }
       if (node.metadata.y > maxY) { maxY = node.metadata.y; }
     }
+    // Loop through exports
+    var keys, exp;
+    if (inports) {
+      keys = Object.keys(inports);
+      len = keys.length;
+      for (i=0; i<len; i++) {
+        exp = inports[keys[i]];
+        if (!exp.metadata) { continue; }
+        if (exp.metadata.x < minX) { minX = exp.metadata.x; }
+        if (exp.metadata.y < minY) { minY = exp.metadata.y; }
+        if (exp.metadata.x > maxX) { maxX = exp.metadata.x; }
+        if (exp.metadata.y > maxY) { maxY = exp.metadata.y; }
+      }
+    }
+    if (outports) {
+      keys = Object.keys(outports);
+      len = keys.length;
+      for (i=0; i<len; i++) {
+        exp = outports[keys[i]];
+        if (!exp.metadata) { continue; }
+        if (exp.metadata.x < minX) { minX = exp.metadata.x; }
+        if (exp.metadata.y < minY) { minY = exp.metadata.y; }
+        if (exp.metadata.x > maxX) { maxX = exp.metadata.x; }
+        if (exp.metadata.y > maxY) { maxY = exp.metadata.y; }
+      }
+    }
+
     if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
       minX = 0;
       minY = 0;
@@ -178,8 +209,12 @@
   // Reusable React classes
   TheGraph.TextBG = React.createClass({
     render: function() {
+      var text = this.props.text;
+      if (!text) {
+        text = "";
+      }
       var height = this.props.height;
-      var width = this.props.text.length * this.props.height * 2/3;
+      var width = text.length * this.props.height * 2/3;
       var radius = this.props.height/2;
 
       var textAnchor = "start";
@@ -213,12 +248,7 @@
           className: (this.props.textClassName ? this.props.textClassName : "text-bg-text"),
           x: this.props.x,
           y: this.props.y,
-          children: this.props.text//,
-          // style: {
-          //   fontSize: this.props.height+"px",
-          //   textAnchor: textAnchor,
-          //   dominantBaseline: dominantBaseline
-          // }
+          children: text
         })
       );
     }

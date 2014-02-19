@@ -43,11 +43,23 @@
       var deltaX = Math.round( event.ddx / scale );
       var deltaY = Math.round( event.ddy / scale );
 
-      // Fires a changeNode event on graph
-      this.props.graph.setNodeMetadata(this.props.key, {
-        x: this.props.node.metadata.x + deltaX,
-        y: this.props.node.metadata.y + deltaY
-      });
+      // Fires a change event on noflo graph, which triggers redraw
+      if (this.props.export) {
+        var newPos = {
+          x: this.props.export.metadata.x + deltaX,
+          y: this.props.export.metadata.y + deltaY
+        };
+        if (this.props.isIn) {
+          this.props.graph.setInportMetadata(this.props.exportKey, newPos);
+        } else {
+          this.props.graph.setOutportMetadata(this.props.exportKey, newPos);
+        }
+      } else {
+        this.props.graph.setNodeMetadata(this.props.key, {
+          x: this.props.node.metadata.x + deltaX,
+          y: this.props.node.metadata.y + deltaY
+        });
+      }
     },
     onTrackEnd: function (event) {
       // Don't fire on graph
@@ -65,13 +77,14 @@
     showContext: function (event) {
       // Don't show native context menu
       event.preventDefault();
+
       // Don't tap graph on hold event
       event.stopPropagation();
       if (event.preventTap) { event.preventTap(); }
 
-      var x = event.pageX;
-      var y = event.pageY;
-
+      // Get mouse position
+      var x = event.clientX;
+      var y = event.clientY;
       if (x === undefined) {
         x = this.pointerX;
         y = this.pointerY;
@@ -88,6 +101,18 @@
       this.getDOMNode().dispatchEvent(contextEvent);
     },
     getContext: function (x, y) {
+      // If this node is an export
+      if (this.props.export) {
+        return TheGraph.ExportMenu({
+          graph: this.props.graph,
+          export: this.props.export,
+          exportKey: this.props.exportKey,
+          isIn: this.props.isIn,
+          x: x,
+          y: y
+        });
+      }
+
       // Absolute position of node
       var scale = this.props.app.state.scale;
       var appX = this.props.app.state.x;
@@ -103,7 +128,7 @@
       if (this.props.graphView.state.edgePreview) {
         if (this.props.graphView.state.edgePreview.isIn) {
           // Show outputs
-          return TheGraph.PortsMenu({
+          return TheGraph.NodeMenuPorts({
             ports: ports.outports,
             isIn: false,
             scale: scale,
@@ -115,7 +140,7 @@
           });
         } else {
           // Show inputs
-          return TheGraph.PortsMenu({
+          return TheGraph.NodeMenuPorts({
             ports: ports.inports,
             isIn: true,
             scale: scale,
@@ -176,11 +201,11 @@
     render: function() {
       this.dirty = false;
 
-      var metadata = this.props.node.metadata;
+      // var metadata = this.props.node.metadata;
 
       var label = this.props.label;
-      var sublabel = this.props.node.component;
-      if (sublabel === label) {
+      var sublabel = this.props.sublabel;
+      if (!sublabel || sublabel === label) {
         sublabel = "";
       }
       var x = this.props.x;
@@ -190,6 +215,8 @@
       var keys, count, index;
       var processKey = this.props.key;
       var app = this.props.app;
+      var graph = this.props.graph;
+      var isExport = (this.props.export !== undefined);
 
       // Inports
       var inports = this.props.ports.inports;
@@ -197,13 +224,19 @@
       count = keys.length;
       index = 0;
       var inportViews = keys.map(function(key){
-        index++;
         var info = inports[key];
-        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
+        info.graph = graph;
+        info.isExport = isExport;
+        // info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * (index+1));
+        info.y = TheGraph.nodeSize / (count+1) * (index+1);
+        info.nodeX = x;
+        info.nodeY = y;
         info.key = processKey + ".in." + info.label;
         info.processKey = processKey;
         info.app = app;
+        info.r = Math.min(4, TheGraph.nodeSide/(count*2+2));
         info.isIn = true;
+        index++;
         return TheGraph.Port(info);
       });
 
@@ -213,13 +246,18 @@
       count = keys.length;
       index = 0;
       var outportViews = keys.map(function(key){
-        index++;
         var info = outports[key];
-        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
+        info.graph = graph;
+        info.isExport = isExport;
+        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * (index+1));
+        info.nodeX = x;
+        info.nodeY = y;
         info.key = processKey + ".out." + info.label;
         info.processKey = processKey;
         info.app = app;
+        info.r = Math.min(4, TheGraph.nodeSide/(count*2+2));
         info.isIn = false;
+        index++;
         return TheGraph.Port(info);
       });
 

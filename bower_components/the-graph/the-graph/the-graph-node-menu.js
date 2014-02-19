@@ -12,13 +12,9 @@
     },
     triggerRemove: function (event) {
       this.props.graph.removeNode( this.props.processKey );
-
-      // Hide self (overkill?)
-      var contextEvent = new CustomEvent('the-graph-context-hide', { 
-        detail: null, 
-        bubbles: true
-      });
-      this.getDOMNode().dispatchEvent(contextEvent);
+    },
+    componentDidMount: function () {
+      this.refs.south.getDOMNode().addEventListener("tap", this.triggerRemove);
     },
     render: function() {
       var scale = this.props.node.props.app.state.scale;
@@ -34,7 +30,7 @@
           y: 0 - this.radius - 25,
           children: this.props.label
         }),
-        TheGraph.PortsMenu({
+        TheGraph.NodeMenuPorts({
           ports: ports.inports,
           isIn: true,
           scale: scale,
@@ -42,7 +38,7 @@
           deltaX: deltaX,
           deltaY: deltaY
         }),
-        TheGraph.PortsMenu({
+        TheGraph.NodeMenuPorts({
           ports: ports.outports,
           isIn: false,
           scale: scale,
@@ -75,9 +71,8 @@
         ),
         React.DOM.g(
           {
-            className: "context-slice context-node-delete click",
-            onMouseDown: this.stopPropagation,
-            onClick: this.triggerRemove
+            ref: "south",
+            className: "context-slice context-node-delete click"
           },
           React.DOM.path({
             className: "context-arc context-node-delete-bg",
